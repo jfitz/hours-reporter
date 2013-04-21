@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Hours reporter</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+</head>
+<body>
+<h1>Hours reported</h1>
+<p>Start date: {{ start }}</p>
+<p>End date: {{ end }}</p>
+{% if status == 0 %}
+<p>These are the hours reported:</p>
+<p></p>
+<form method="GET" action="hours-report-csv">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as CSV">
+</form>
+<form method="GET" action="hours-report-xml">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as XML">
+</form>
+<form method="GET" action="hours-report-json">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as JSON">
+</form>
+<p></p>
+<table>
+<tr>
+<th>Project</th>
+<th>Date</th>
+<th>Hours</th>
+<th>Description</th>
+</tr>
+{% for k, r in records %}
+<tr>
+<td>{{ projects[r.project].name }}</td>
+<td>{{ r.variables['startDate'] }}</td>
+<td>{{ r.variables['taskHours'] }}</td>
+<td>{{ r.variables['comment'] }}</td>
+</tr>
+{% endfor %}
+</table>
+<form method="GET" action="hours-report-csv">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as CSV">
+</form>
+<form method="GET" action="hours-report-xml">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as XML">
+</form>
+<form method="GET" action="hours-report-json">
+<input type="hidden" name="contractor_id" value="{{ user }}">
+<input type="hidden" name="fala" value="{{ fala }}">
+<input type="hidden" name="bala" value="{{ bala }}">
+<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
+<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
+<input type="submit" value="Download as JSON">
+</form>
+{% else %}
+<p>Report status was {{ status }}</p>
+{% endif %}
+<p></p>
+<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
+alt="Powered by Google App Engine" />
+</body>
+</html>

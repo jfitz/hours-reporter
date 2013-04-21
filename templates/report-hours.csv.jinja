@@ -1,0 +1,3 @@
+"Project", "Date", "Hours", "Description"
+{% for k, r in records %}"{{ projects[r.project].name }}", "{{ r.variables['startDate'] }}", {{ r.variables['taskHours'] }}, "{{ r.variables['comment'] }}"
+{% endfor %}

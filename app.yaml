@@ -1,0 +1,19 @@
+application: jfitz-hours
+version: prod
+runtime: python27
+threadsafe: true
+api_version: 1
+
+handlers:
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /.*
+  script: hours.application
+
+libraries:
+- name: jinja2
+  version: latest
