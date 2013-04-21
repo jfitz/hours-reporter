@@ -79,9 +79,10 @@ class HoursReport(webapp.RequestHandler):
 			else:
 				projects = template_values['projects']
 				records = template_values['records']
-				t_list = ()
+				t_list = []
 				for k, r in records:
-					 t_list.append(projects[r.project].name)
+					t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+					t_list.append(t_dict)
 
 				s = json.dumps( t_list )
 				self.response.out.write(s)

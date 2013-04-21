@@ -1,3 +1,0 @@
-<hours-report>
-{% for k, r in records %}<record><project-name>{{ projects[r.project].name }}</project-name><date>{{ r.variables['startDate'] }}</date><hours>{{ r.variables['taskHours'] }}</hours><comment>{{ r.variables['comment'] }}</comment></record>{% endfor %}
-</hours-report>
