@@ -117,27 +117,19 @@ class HoursReportHtml(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
 
-class HoursReportCsv(HoursReport):
+class HoursReportDownload(HoursReport):
 	def __init__(self, *args, **kwargs):
-		super(HoursReportCsv, self).__init__(*args, **kwargs)
-		self.response_template = jinja_environment.get_template('templates/report-hours.csv.jinja')
-		self.content_type = 'application/csv'
-		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
-		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
-
-class HoursReportXml(HoursReport):
-	def __init__(self, *args, **kwargs):
-		super(HoursReportXml, self).__init__(*args, **kwargs)
-		self.response_template = jinja_environment.get_template('templates/report-hours.xml.jinja')
-		self.content_type = 'text/xml'
-		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
-		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
-
-class HoursReportJson(HoursReport):
-	def __init__(self, *args, **kwargs):
-		super(HoursReportJson, self).__init__(*args, **kwargs)
-		self.response_template = ''
-		self.content_type = 'application/json'
+		super(HoursReportDownload, self).__init__(*args, **kwargs)
+		format = self.request.get('format')
+		if format == 'CSV':
+			self.response_template = jinja_environment.get_template('templates/report-hours.csv.jinja')
+			self.content_type = 'application/csv'
+		if format == 'XML':
+			self.response_template = jinja_environment.get_template('templates/report-hours.xml.jinja')
+			self.content_type = 'text/xml'
+		if format == 'JSON':
+			self.response_template = ''
+			self.content_type = 'application/json'
 		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
 
@@ -145,9 +137,7 @@ application = webapp.WSGIApplication(
 	[
 		('/', MainPage),
 		('/hours-report', HoursReportHtml),
-		('/hours-report-csv', HoursReportCsv),
-		('/hours-report-xml', HoursReportXml),
-		('/hours-report-json', HoursReportJson)
+		('/hours-report-download', HoursReportDownload)
 	],
 	debug=False)
 

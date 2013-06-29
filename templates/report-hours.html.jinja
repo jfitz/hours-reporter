@@ -12,29 +12,18 @@
 {% if status == 0 %}
 <p>These are the hours reported:</p>
 <p></p>
-<form method="GET" action="hours-report-csv">
+<form method="GET" action="hours-report-download">
 <input type="hidden" name="contractor_id" value="{{ user }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
 <input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
 <input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as CSV">
-</form>
-<form method="GET" action="hours-report-xml">
-<input type="hidden" name="contractor_id" value="{{ user }}">
-<input type="hidden" name="fala" value="{{ fala }}">
-<input type="hidden" name="bala" value="{{ bala }}">
-<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
-<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as XML">
-</form>
-<form method="GET" action="hours-report-json">
-<input type="hidden" name="contractor_id" value="{{ user }}">
-<input type="hidden" name="fala" value="{{ fala }}">
-<input type="hidden" name="bala" value="{{ bala }}">
-<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
-<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as JSON">
+Download in format: <select name="format">
+<option selected value="CSV">CSV</option>
+<option value="XML">XML</option>
+<option value="JSON">JSON</option>
+</select>
+<input type="submit" value="Download">
 </form>
 <p></p>
 <table>
@@ -53,29 +42,18 @@
 </tr>
 {% endfor %}
 </table>
-<form method="GET" action="hours-report-csv">
+<form method="GET" action="hours-report-download">
 <input type="hidden" name="contractor_id" value="{{ user }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
 <input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
 <input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as CSV">
-</form>
-<form method="GET" action="hours-report-xml">
-<input type="hidden" name="contractor_id" value="{{ user }}">
-<input type="hidden" name="fala" value="{{ fala }}">
-<input type="hidden" name="bala" value="{{ bala }}">
-<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
-<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as XML">
-</form>
-<form method="GET" action="hours-report-json">
-<input type="hidden" name="contractor_id" value="{{ user }}">
-<input type="hidden" name="fala" value="{{ fala }}">
-<input type="hidden" name="bala" value="{{ bala }}">
-<input type="hidden" id="popupDatepicker1" name="start_date" value="{{ start }}">
-<input type="hidden" id="popupDatepicker2" name="end_date" value="{{ end }}">
-<input type="submit" value="Download as JSON">
+Download in format: <select name="format">
+<option selected value="CSV">CSV</option>
+<option value="XML">XML</option>
+<option value="JSON">JSON</option>
+</select>
+<input type="submit" value="Download">
 </form>
 {% else %}
 <p>Report status was {{ status }}</p>
