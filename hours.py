@@ -35,13 +35,27 @@ def get_records_from_yast(yast, time_start, time_end, parent_id):
 	sorted_records = sorted(records.iteritems())
 	return sorted_records
 
-def get_projects_from_yast(yast, time_start, time_end, user_dict, project_code):
+def summarize_records(records):
+	summary_records = []
+	old_date = False
+	total_hours = 0.0
+	for k, r in records:
+		if r.variables['startDate'] != old_date:
+			if old_date != False:
+				summary_records.append( { 'date': old_date, 'hours': total_hours } )
+			old_date = r.variables['startDate']
+			total_hours = 0.0
+		total_hours += float(r.variables['taskHours'])
+	if old_date != False:
+		summary_records.append( { 'date': old_date, 'hours': str(total_hours) } )
+	return summary_records
+	
+def get_projects_from_yast(yast, time_start, time_end, project_code):
 	projects = yast.getProjects()
 	sorted_records = get_records_from_yast(yast, time_start, time_end, project_code)
 	yast_status = yast.getStatus()
-		
-	more_dict = { 'status': yast_status, 'projects': projects, 'records': sorted_records }
-	values = dict(user_dict.items() + more_dict.items())
+	summary_records = summarize_records(sorted_records)
+	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records }
 	return values
 			
 def yast_error(yast, template):
@@ -59,9 +73,9 @@ class MainPage(webapp.RequestHandler):
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class HoursDetail(webapp.RequestHandler):
+class HoursReport(webapp.RequestHandler):
 	def __init__(self, *args, **kwargs):
-		super(HoursDetail, self).__init__(*args, **kwargs)
+		super(HoursReport, self).__init__(*args, **kwargs)
 	
 	def get_yast_data(self, date_s2, date_e2, user_dict):
 		user = user_dict['user']
@@ -69,27 +83,12 @@ class HoursDetail(webapp.RequestHandler):
 		yast = Yast()
 		hash = yast.login(user, falabala)
 		if hash != False:
-			template_values = get_projects_from_yast(yast, date_s2, date_e2, user_dict, 2015302)
-
-			# generate response
-			if len(self.content_type) > 0:
-				self.response.headers['Content-Type'] = self.content_type
-			if self.response_template:
-				self.response.out.write(self.response_template.render(template_values))
-			else:
-				projects = template_values['projects']
-				records = template_values['records']
-				t_list = []
-				for k, r in records:
-					t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
-					t_list.append(t_dict)
-
-				s = json.dumps( t_list )
-				self.response.out.write(s)
-
+			yast_dict = get_projects_from_yast(yast, date_s2, date_e2, 2015302)
+			values = dict(user_dict.items() + yast_dict.items())
+			self.write_detail_response(values)
 		else:
 			self.response.out.write(yast_error(yast, self.error_template))
-	
+
 	def get(self):
 		date_start = self.request.get('start_date')
 		date_end = self.request.get('end_date')
@@ -105,10 +104,53 @@ class HoursDetail(webapp.RequestHandler):
 			self.response.out.write(self.date_error_template.render(template_values))
 			return
 
-		# connect to yast.com and retrieve data
 		user_dict = { 'user': user, 'fala': fala, 'bala': bala, 'start': date_start, 'end': date_end }
+		# connect to yast.com and retrieve data
 		self.get_yast_data(date_s2, date_e2, user_dict)
 
+class Timesheet(HoursReport):
+	def __init__(self, *args, **kwargs):
+		super(Timesheet, self).__init__(*args, **kwargs)
+	
+	def write_detail_response(self, values):	
+		self.response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
+		self.content_type = ''
+		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
+		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
+		if len(self.content_type) > 0:
+			self.response.headers['Content-Type'] = self.content_type
+		if self.response_template:
+			self.response.out.write(self.response_template.render(values))
+		else:
+			projects = values['projects']
+			records = values['records']
+			t_list = []
+			for k, r in records:
+				t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+				t_list.append(t_dict)
+			s = json.dumps( t_list )
+			self.response.out.write(s)
+	
+	
+class HoursDetail(HoursReport):
+	def __init__(self, *args, **kwargs):
+		super(HoursDetail, self).__init__(*args, **kwargs)
+	
+	def write_detail_response(self, values):	
+		if len(self.content_type) > 0:
+			self.response.headers['Content-Type'] = self.content_type
+		if self.response_template:
+			self.response.out.write(self.response_template.render(values))
+		else:
+			projects = values['projects']
+			records = values['records']
+			t_list = []
+			for k, r in records:
+				t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+				t_list.append(t_dict)
+			s = json.dumps( t_list )
+			self.response.out.write(s)
+	
 class HoursDetailHtml(HoursDetail):
 	def __init__(self, *args, **kwargs):
 		super(HoursDetailHtml, self).__init__(*args, **kwargs)
@@ -137,7 +179,8 @@ application = webapp.WSGIApplication(
 	[
 		('/', MainPage),
 		('/hours-detail', HoursDetailHtml),
-		('/hours-detail-download', HoursDetailDownload)
+		('/hours-detail-download', HoursDetailDownload),
+		('/timesheet', Timesheet)
 	],
 	debug=False)
 

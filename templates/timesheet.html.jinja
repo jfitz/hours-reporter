@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Hours reporter</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+</head>
+<body>
+<h1>Timesheet</h1>
+<p>Start date: {{ start }}</p>
+<p>End date: {{ end }}</p>
+{% if status == 0 %}
+<p>Client: OMB</p>
+<p>Billed client: QBase</p>
+<p></p>
+<table>
+<tr>
+<th>Date</th>
+<th>Hours</th>
+</tr>
+{% for r in summary %}
+<tr>
+<td>{{ r['date'] }}</td>
+<td>{{ r['hours'] }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>Report status was {{ status }}</p>
+{% endif %}
+<p>Submitter name: </p>
+<p>Submitter contact: </p>
+<p>Submitter: _____________________________________ Date: ______________</p>
+<p></p>
+<p>Approver name: </p>
+<p>Approver contact: </p>
+<p>Approver: _____________________________________ Date: ______________</p>
+<p></p>
+<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
+alt="Powered by Google App Engine" />
+</body>
+</html>
