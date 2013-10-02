@@ -35,14 +35,14 @@ def get_records_from_yast(yast, time_start, time_end, parent_id):
 	sorted_records = sorted(records.iteritems())
 	return sorted_records
 
-def get_projects_from_yast(yast, time_start, time_end, user_dict):
+def get_projects_from_yast(yast, time_start, time_end, user_dict, project_code):
 	projects = yast.getProjects()
-	sorted_records = get_records_from_yast(yast, time_start, time_end, 2015302)
+	sorted_records = get_records_from_yast(yast, time_start, time_end, project_code)
 	yast_status = yast.getStatus()
 		
 	more_dict = { 'status': yast_status, 'projects': projects, 'records': sorted_records }
-	template_values = dict(user_dict.items() + more_dict.items())
-	return template_values
+	values = dict(user_dict.items() + more_dict.items())
+	return values
 			
 def yast_error(yast, template):
 	if yast.getStatus() == YastStatus.LOGIN_FAILURE:
@@ -59,9 +59,9 @@ class MainPage(webapp.RequestHandler):
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class HoursReport(webapp.RequestHandler):
+class HoursDetail(webapp.RequestHandler):
 	def __init__(self, *args, **kwargs):
-		super(HoursReport, self).__init__(*args, **kwargs)
+		super(HoursDetail, self).__init__(*args, **kwargs)
 	
 	def get_yast_data(self, date_s2, date_e2, user_dict):
 		user = user_dict['user']
@@ -69,7 +69,7 @@ class HoursReport(webapp.RequestHandler):
 		yast = Yast()
 		hash = yast.login(user, falabala)
 		if hash != False:
-			template_values = get_projects_from_yast(yast, date_s2, date_e2, user_dict)
+			template_values = get_projects_from_yast(yast, date_s2, date_e2, user_dict, 2015302)
 
 			# generate response
 			if len(self.content_type) > 0:
@@ -109,35 +109,35 @@ class HoursReport(webapp.RequestHandler):
 		user_dict = { 'user': user, 'fala': fala, 'bala': bala, 'start': date_start, 'end': date_end }
 		self.get_yast_data(date_s2, date_e2, user_dict)
 
-class HoursReportHtml(HoursReport):
+class HoursDetailHtml(HoursDetail):
 	def __init__(self, *args, **kwargs):
-		super(HoursReportHtml, self).__init__(*args, **kwargs)
-		self.response_template = jinja_environment.get_template('templates/report-hours.html.jinja')
+		super(HoursDetailHtml, self).__init__(*args, **kwargs)
+		self.response_template = jinja_environment.get_template('templates/detail-hours.html.jinja')
 		self.content_type = ''
-		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
-		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
+		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
+		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
-class HoursReportDownload(HoursReport):
+class HoursDetailDownload(HoursDetail):
 	def __init__(self, *args, **kwargs):
-		super(HoursReportDownload, self).__init__(*args, **kwargs)
+		super(HoursDetailDownload, self).__init__(*args, **kwargs)
 		format = self.request.get('format')
 		if format == 'CSV':
-			self.response_template = jinja_environment.get_template('templates/report-hours.csv.jinja')
+			self.response_template = jinja_environment.get_template('templates/detail-hours.csv.jinja')
 			self.content_type = 'application/csv'
 		if format == 'XML':
-			self.response_template = jinja_environment.get_template('templates/report-hours.xml.jinja')
+			self.response_template = jinja_environment.get_template('templates/detail-hours.xml.jinja')
 			self.content_type = 'text/xml'
 		if format == 'JSON':
 			self.response_template = ''
 			self.content_type = 'application/json'
-		self.error_template = jinja_environment.get_template('templates/report-error-1.html.jinja')
-		self.date_error_template = jinja_environment.get_template('templates/report-error.html.jinja')
+		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
+		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
 application = webapp.WSGIApplication(
 	[
 		('/', MainPage),
-		('/hours-report', HoursReportHtml),
-		('/hours-report-download', HoursReportDownload)
+		('/hours-detail', HoursDetailHtml),
+		('/hours-detail-download', HoursDetailDownload)
 	],
 	debug=False)
 
