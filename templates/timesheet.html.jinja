@@ -24,6 +24,10 @@
 <td align="center">{{ r['hours'] }}</td>
 </tr>
 {% endfor %}
+<tr>
+<td>Total:</td>
+<td align="center">{{ total_hours }}</td>
+</tr>
 </table>
 {% else %}
 <p>Report status was {{ status }}</p>

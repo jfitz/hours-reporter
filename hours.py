@@ -68,21 +68,27 @@ def summarize_records(records, start_date, end_date):
 	if old_date != False:
 		summary_records.append( { 'date': old_date, 'hours': str(total_hours) } )
 	return summary_records
+
+def totalize_hours(records):
+	total_hours = 0.0
+	for r in records:
+		total_hours += float(r['hours'])
+	return total_hours
 	
 def get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, project_code):
 	projects = yast.getProjects()
 	sorted_records = get_records_from_yast(yast, start_datetime, end_datetime, project_code)
 	yast_status = yast.getStatus()
+	completed_sorted_records = []
+	summary_records = []
 	if yast_status == 0:
 		complete_records = get_summary_info(sorted_records)
 		for single_date in daterange(start_date, end_date):
 			complete_records.append( { 'date': single_date, 'hours': 0 } )
 		complete_sorted_records = sorted(complete_records, key=lambda k: k['date'])
 		summary_records = summarize_records(complete_sorted_records, start_date, end_date)
-	else:
-		completed_sorted_records = []
-		summary_records = []
-	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records }
+	total_hours = totalize_hours(completed_sorted_records)
+	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'total_hours': total_hours }
 	return values
 			
 def yast_error(yast, template):
