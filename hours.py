@@ -131,7 +131,6 @@ class HoursReport(webapp.RequestHandler):
 			self.response.out.write(yast_error(yast, self.error_template))
 
 	def get(self):
-		print '** start_date: ' + self.request.get('start_date') + ' end_date: ' + self.request.get('end_date')
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
 			end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%m/%d/%Y")
@@ -148,8 +147,11 @@ class HoursReport(webapp.RequestHandler):
 		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
 		bala = self.request.get('bala')
+		contractor_name = self.request.get('contractor_name')
+		approver_name = self.request.get('approver_name')
+		approver_contact = self.request.get('approver_contact') 
 
-		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
 		# connect to yast.com and retrieve data
 		self.get_yast_data(start_date, end_date, start_datetime, end_datetime, user_dict)
 

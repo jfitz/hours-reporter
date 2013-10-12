@@ -32,12 +32,12 @@
 {% else %}
 <p>Report status was {{ status }}</p>
 {% endif %}
-<p>Submitter name: </p>
-<p>Submitter contact: </p>
+<p>Submitter name: {{ contractor_name }}</p>
+<p>Submitter contact: {{ contractor_id }}</p>
 <p>Submitter: _____________________________________ Date: ______________</p>
 <p></p>
-<p>Approver name: </p>
-<p>Approver contact: </p>
+<p>Approver name: {{ approver_name }}</p>
+<p>Approver contact: {{ approver_contact }}</p>
 <p>Approver: _____________________________________ Date: ______________</p>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
