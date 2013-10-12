@@ -8,23 +8,26 @@
 <body>
 <h1>Timesheet</h1>
 <table>
-<tr><td>Client: OMB</td><td>&nbsp;</td><td>Billed client: QBase</td></tr>
-<tr><td>Start date: {{ start }}</td><td>&nbsp;</td><td>End date: {{ end }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Client: OMB</td><td>&nbsp;</td><td>Billed client: QBase</td></tr>
+<tr><td width="20">&nbsp;</td><td>Start date: {{ start }}</td><td>&nbsp;</td><td>End date: {{ end }}</td></tr>
 </table>
 <p></p>
 {% if status == 0 %}
 <table>
 <tr>
+<th width="20">&nbsp;</th>
 <th align="left">Date</th>
 <th align="right">Hours</th>
 </tr>
 {% for r in summary %}
 <tr>
+<td width="20">&nbsp;</td>
 <td>{{ r['date'] }}</td>
 <td align="right">{{ r['hours'] }}</td>
 </tr>
 {% endfor %}
 <tr>
+<td width="20">&nbsp;</td>
 <td>Total:</td>
 <td align="right">{{ total_hours }}</td>
 </tr>
