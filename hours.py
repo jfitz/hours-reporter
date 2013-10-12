@@ -105,15 +105,24 @@ class MainPage(webapp.RequestHandler):
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
+class SelectReport(webapp.RequestHandler):
+	def get(self):
+		contractor_id = self.request.get('contractor_id')
+		fala = self.request.get('fala')
+		bala = self.request.get('bala')
+		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala }
+		template = jinja_environment.get_template('templates/select.html.jinja')
+		self.response.out.write(template.render(template_values))
+
 class HoursReport(webapp.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(HoursReport, self).__init__(*args, **kwargs)
 	
 	def get_yast_data(self, start_date, end_date, start_datetime, end_datetime, user_dict):
-		user = user_dict['user']
+		contractor_id = user_dict['contractor_id']
 		falabala = user_dict['fala'] + str(len(user_dict['fala'])) + user_dict['bala']
 		yast = Yast()
-		hash = yast.login(user, falabala)
+		hash = yast.login(contractor_id, falabala)
 		if hash != False:
 			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
 			values = dict(user_dict.items() + yast_dict.items())
@@ -131,7 +140,7 @@ class HoursReport(webapp.RequestHandler):
 			return
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
-		user = self.request.get('contractor_id')
+		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
 		bala = self.request.get('bala')
 
@@ -143,19 +152,19 @@ class HoursReport(webapp.RequestHandler):
 			self.response.out.write(self.date_error_template.render(template_values))
 			return
 
-		user_dict = { 'user': user, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
+		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
 		# connect to yast.com and retrieve data
 		self.get_yast_data(start_date, end_date, start_datetime, end_datetime, user_dict)
 
 class Timesheet(HoursReport):
 	def __init__(self, *args, **kwargs):
 		super(Timesheet, self).__init__(*args, **kwargs)
-	
-	def write_detail_response(self, values):	
 		self.response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
 		self.content_type = ''
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
+	
+	def write_detail_response(self, values):	
 		if len(self.content_type) > 0:
 			self.response.headers['Content-Type'] = self.content_type
 		if self.response_template:
@@ -217,6 +226,7 @@ class HoursDetailDownload(HoursDetail):
 application = webapp.WSGIApplication(
 	[
 		('/', MainPage),
+		('/select', SelectReport),
 		('/hours-detail', HoursDetailHtml),
 		('/hours-detail-download', HoursDetailDownload),
 		('/timesheet', Timesheet)
