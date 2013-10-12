@@ -131,26 +131,23 @@ class HoursReport(webapp.RequestHandler):
 			self.response.out.write(yast_error(yast, self.error_template))
 
 	def get(self):
+		print '** start_date: ' + self.request.get('start_date') + ' end_date: ' + self.request.get('end_date')
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
 			end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%m/%d/%Y")
 		except ValueError:
-			template_values = { }
-			self.response.out.write(self.date_error_template.render(template_values))
-			return
+			try:
+				start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%Y-%m-%d")
+				end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%Y-%m-%d")
+			except ValueError:
+				template_values = { }
+				self.response.out.write(self.date_error_template.render(template_values))
+				return
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
 		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
 		bala = self.request.get('bala')
-
-		try:
-			start_datetime = parse_start_datetime(self.request.get('start_date'))
-			end_datetime = parse_end_datetime(self.request.get('end_date'))
-		except ValueError:
-			template_values = { }
-			self.response.out.write(self.date_error_template.render(template_values))
-			return
 
 		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
 		# connect to yast.com and retrieve data
