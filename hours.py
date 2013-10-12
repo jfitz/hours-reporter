@@ -29,12 +29,13 @@ def parse_end_datetime(string_date):
 	
 def get_records_from_yast(yast, start_datetime, end_datetime, parent_id):
 	start_time = time.mktime([start_datetime.year, start_datetime.month, start_datetime.day, start_datetime.hour, start_datetime.minute, start_datetime.second, 0, 0, -1])
-	end_time = time.mktime([end_datetime.year, end_datetime.month, end_datetime.day, end_datetime.hour, end_datetime.minute, end_datetime.second, 0, 0, -1])
+	end_datetime2 = end_datetime + datetime.timedelta(1)
+	end_time = time.mktime([end_datetime2.year, end_datetime2.month, end_datetime2.day, end_datetime2.hour, end_datetime2.minute, end_datetime2.second, 0, 0, -1])
 	records = yast.getRecords({'timeFrom': start_time, 'timeTo': end_time, 'parentId': parent_id})
 	for k, r in records.iteritems():
-		time_start = r.variables['startTime']
-		r.variables['startDate'] = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
-		r.variables['taskHours'] = str(round((r.variables['endTime'] - r.variables['startTime'])/3600.0, 2))
+		start_time = r.variables['startTime']
+		r.variables['startDate'] = datetime.datetime.fromtimestamp(start_time)
+		r.variables['taskHours'] = str(round((r.variables['endTime'] - start_time)/3600.0, 2))
 	sorted_records = sorted(records.iteritems())
 	return sorted_records
 
@@ -48,7 +49,7 @@ def get_summary_info(records):
 	summary_records = []
 	for k, r in records:
 		current_time = time.localtime(r.variables['startTime'])
-		current_date = datetime.date(current_time.tm_year, current_time.tm_mon, current_time.tm_mday) 
+		current_date = datetime.date(current_time.tm_year, current_time.tm_mon, current_time.tm_mday)
 		summary_records.append( { 'date': current_date, 'hours': float(r.variables['taskHours']) } )
 	return summary_records
 	
