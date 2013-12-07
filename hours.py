@@ -119,26 +119,6 @@ class HoursReport(webapp.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(HoursReport, self).__init__(*args, **kwargs)
 	
-	def get_yast_data(self, start_date, end_date, start_datetime, end_datetime, user_dict):
-		contractor_id = user_dict['contractor_id']
-		falabala = user_dict['fala'] + str(len(user_dict['fala'])) + user_dict['bala']
-		yast = Yast()
-		hash = yast.login(contractor_id, falabala)
-		if hash != False:
-			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
-			values = dict(user_dict.items() + yast_dict.items())
-			self.write_detail_response(values)
-		else:
-			self.response.out.write(yast_error(yast, self.error_template))
-
-	def write_detail_response(self, values):	
-		if len(self.content_type) > 0:
-			self.response.headers['Content-Type'] = self.content_type
-		if self.response_template:
-			self.response.out.write(self.response_template.render(values))
-		else:
-			self.response.out.write(self.response_json(values))
-	
 	def get(self):
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
@@ -151,6 +131,8 @@ class HoursReport(webapp.RequestHandler):
 				template_values = { }
 				self.response.out.write(self.date_error_template.render(template_values))
 				return
+
+		# build dictionary of user values
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
 		contractor_id = self.request.get('contractor_id')
@@ -159,10 +141,23 @@ class HoursReport(webapp.RequestHandler):
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact') 
-
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
+
 		# connect to yast.com and retrieve data
-		self.get_yast_data(start_date, end_date, start_datetime, end_datetime, user_dict)
+		falabala = fala + str(len(fala)) + bala
+		yast = Yast()
+		hash = yast.login(contractor_id, falabala)
+		if hash != False:
+			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
+			values = dict(user_dict.items() + yast_dict.items())
+			if len(self.content_type) > 0:
+				self.response.headers['Content-Type'] = self.content_type
+			if self.response_template:
+				self.response.out.write(self.response_template.render(values))
+			else:
+				self.response.out.write(self.response_json(values))
+		else:
+			self.response.out.write(yast_error(yast, self.error_template))
 
 class Timesheet(HoursReport):
 	def __init__(self, *args, **kwargs):
