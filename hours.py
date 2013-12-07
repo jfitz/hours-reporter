@@ -164,40 +164,44 @@ class Timesheet(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
 	
+	def response_json(self, values):
+		projects = values['projects']
+		records = values['records']
+		t_list = []
+		for k, r in records:
+			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+			t_list.append(t_dict)
+		return json.dumps( t_list )
+		
 	def write_detail_response(self, values):	
 		if len(self.content_type) > 0:
 			self.response.headers['Content-Type'] = self.content_type
 		if self.response_template:
 			self.response.out.write(self.response_template.render(values))
 		else:
-			projects = values['projects']
-			records = values['records']
-			t_list = []
-			for k, r in records:
-				t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
-				t_list.append(t_dict)
-			s = json.dumps( t_list )
-			self.response.out.write(s)
+			self.response.out.write(self.response_json(values))
 	
 	
 class HoursDetail(HoursReport):
 	def __init__(self, *args, **kwargs):
 		super(HoursDetail, self).__init__(*args, **kwargs)
 	
+	def response_json(self, values):
+		projects = values['projects']
+		records = values['records']
+		t_list = []
+		for k, r in records:
+			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+			t_list.append(t_dict)
+		return json.dumps( t_list )
+	
 	def write_detail_response(self, values):	
 		if len(self.content_type) > 0:
 			self.response.headers['Content-Type'] = self.content_type
 		if self.response_template:
 			self.response.out.write(self.response_template.render(values))
 		else:
-			projects = values['projects']
-			records = values['records']
-			t_list = []
-			for k, r in records:
-				t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
-				t_list.append(t_dict)
-			s = json.dumps( t_list )
-			self.response.out.write(s)
+			self.response.out.write(self.response_json(values))
 	
 class HoursDetailHtml(HoursDetail):
 	def __init__(self, *args, **kwargs):
