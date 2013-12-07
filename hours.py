@@ -131,6 +131,14 @@ class HoursReport(webapp.RequestHandler):
 		else:
 			self.response.out.write(yast_error(yast, self.error_template))
 
+	def write_detail_response(self, values):	
+		if len(self.content_type) > 0:
+			self.response.headers['Content-Type'] = self.content_type
+		if self.response_template:
+			self.response.out.write(self.response_template.render(values))
+		else:
+			self.response.out.write(self.response_json(values))
+	
 	def get(self):
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
@@ -173,15 +181,6 @@ class Timesheet(HoursReport):
 			t_list.append(t_dict)
 		return json.dumps( t_list )
 		
-	def write_detail_response(self, values):	
-		if len(self.content_type) > 0:
-			self.response.headers['Content-Type'] = self.content_type
-		if self.response_template:
-			self.response.out.write(self.response_template.render(values))
-		else:
-			self.response.out.write(self.response_json(values))
-	
-	
 class HoursDetail(HoursReport):
 	def __init__(self, *args, **kwargs):
 		super(HoursDetail, self).__init__(*args, **kwargs)
@@ -194,14 +193,6 @@ class HoursDetail(HoursReport):
 			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
 			t_list.append(t_dict)
 		return json.dumps( t_list )
-	
-	def write_detail_response(self, values):	
-		if len(self.content_type) > 0:
-			self.response.headers['Content-Type'] = self.content_type
-		if self.response_template:
-			self.response.out.write(self.response_template.render(values))
-		else:
-			self.response.out.write(self.response_json(values))
 	
 class HoursDetailHtml(HoursDetail):
 	def __init__(self, *args, **kwargs):
