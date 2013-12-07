@@ -119,6 +119,15 @@ class HoursReport(webapp.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(HoursReport, self).__init__(*args, **kwargs)
 	
+	def response_json(self, values):
+		projects = values['projects']
+		records = values['records']
+		t_list = []
+		for k, r in records:
+			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+			t_list.append(t_dict)
+		return json.dumps( t_list )
+	
 	def get(self):
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
@@ -150,56 +159,33 @@ class HoursReport(webapp.RequestHandler):
 		if hash != False:
 			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
 			values = dict(user_dict.items() + yast_dict.items())
-			if len(self.content_type) > 0:
-				self.response.headers['Content-Type'] = self.content_type
-			if self.response_template:
-				self.response.out.write(self.response_template.render(values))
-			else:
-				self.response.out.write(self.response_json(values))
+			self.write_response(values)
 		else:
 			self.response.out.write(yast_error(yast, self.error_template))
 
 class Timesheet(HoursReport):
 	def __init__(self, *args, **kwargs):
 		super(Timesheet, self).__init__(*args, **kwargs)
-		self.response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
-		self.content_type = ''
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
+
+	def write_response(self, values):
+		response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
+		self.response.out.write(response_template.render(values))
 	
-	def response_json(self, values):
-		projects = values['projects']
-		records = values['records']
-		t_list = []
-		for k, r in records:
-			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
-			t_list.append(t_dict)
-		return json.dumps( t_list )
-		
-class HoursDetail(HoursReport):
+class HoursReportHtml(HoursReport):
 	def __init__(self, *args, **kwargs):
-		super(HoursDetail, self).__init__(*args, **kwargs)
-	
-	def response_json(self, values):
-		projects = values['projects']
-		records = values['records']
-		t_list = []
-		for k, r in records:
-			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
-			t_list.append(t_dict)
-		return json.dumps( t_list )
-	
-class HoursDetailHtml(HoursDetail):
-	def __init__(self, *args, **kwargs):
-		super(HoursDetailHtml, self).__init__(*args, **kwargs)
-		self.response_template = jinja_environment.get_template('templates/detail-hours.html.jinja')
-		self.content_type = ''
+		super(HoursReportHtml, self).__init__(*args, **kwargs)
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
-class HoursDetailDownload(HoursDetail):
+	def write_response(self, values):
+		response_template = jinja_environment.get_template('templates/detail-hours.html.jinja')
+		self.response.out.write(response_template.render(values))
+
+class HoursReportDownload(HoursReport):
 	def __init__(self, *args, **kwargs):
-		super(HoursDetailDownload, self).__init__(*args, **kwargs)
+		super(HoursReportDownload, self).__init__(*args, **kwargs)
 		format = self.request.get('format')
 		if format == 'CSV':
 			self.response_template = jinja_environment.get_template('templates/detail-hours.csv.jinja')
@@ -213,12 +199,19 @@ class HoursDetailDownload(HoursDetail):
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
+	def write_response(self, values):
+		self.response.headers['Content-Type'] = self.content_type
+		if self.response_template:
+			self.response.out.write(self.response_template.render(values))
+		else:
+			self.response.out.write(self.response_json(values))
+
 application = webapp.WSGIApplication(
 	[
 		('/', MainPage),
 		('/select', SelectReport),
-		('/hours-detail', HoursDetailHtml),
-		('/hours-detail-download', HoursDetailDownload),
+		('/details', HoursReportHtml),
+		('/details-download', HoursReportDownload),
 		('/timesheet', Timesheet)
 	],
 	debug=False)

@@ -12,7 +12,7 @@
 {% if status == 0 %}
 <p>These are the hours reported:</p>
 <p></p>
-<form method="GET" action="hours-detail-download">
+<form method="GET" action="details-download">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
@@ -42,7 +42,7 @@ Download in format: <select name="format">
 </tr>
 {% endfor %}
 </table>
-<form method="GET" action="hours-detail-download">
+<form method="GET" action="details-download">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
