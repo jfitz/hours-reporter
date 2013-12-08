@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Hours reporter</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+</head>
+<body>
+<h1>Timesheet</h1>
+<table>
+<tr><td width="20">&nbsp;</td><td>Client: OMB</td><td>&nbsp;</td><td>Billed client: QBase</td></tr>
+<tr><td width="20">&nbsp;</td><td>Start date: {{ start }}</td><td>&nbsp;</td><td>End date: {{ end }}</td></tr>
+</table>
+<p></p>
+{% if status == 0 %}
+<table>
+<tr>
+<th width="20">&nbsp;</th>
+<th align="left">Week starting</th>
+<th align="right">Hours</th>
+<th align="left">Sunday</th>
+<th align="left">Monday</th>
+<th align="left">Tuesday</th>
+<th align="left">Wednesday</th>
+<th align="left">Thursday</th>
+<th align="left">Friday</th>
+<th align="left">Saturday</th>
+</tr>
+{% for r in weekly_summary %}
+<tr>
+<td width="20">&nbsp;</td>
+<td>{{ r['date'] }}</td>
+<td align="right">{{ r['hours'] }}</td>
+<td align="right">{{ r['sunday'] }}</td>
+<td align="right">{{ r['monday'] }}</td>
+<td align="right">{{ r['tuesday'] }}</td>
+<td align="right">{{ r['wednesday'] }}</td>
+<td align="right">{{ r['thursday'] }}</td>
+<td align="right">{{ r['friday'] }}</td>
+<td align="right">{{ r['saturday'] }}</td>
+</tr>
+{% endfor %}
+<tr>
+<td width="20">&nbsp;</td>
+<td>Total:</td>
+<td align="right">{{ total_hours }}</td>
+</tr>
+</table>
+{% else %}
+<p>Report status was {{ status }}</p>
+{% endif %}
+<p>Submitter name: {{ contractor_name }}</p>
+<p>Submitter contact: {{ contractor_id }}</p>
+<p>Submitter: _____________________________________ Date: ______________</p>
+<p></p>
+<p>Approver name: {{ approver_name }}</p>
+<p>Approver contact: {{ approver_contact }}</p>
+<p>Approver: _____________________________________ Date: ______________</p>
+<p></p>
+<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
+alt="Powered by Google App Engine" />
+</body>
+</html>

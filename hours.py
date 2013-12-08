@@ -70,6 +70,33 @@ def summarize_records(records, start_date, end_date):
 		summary_records.append( { 'date': old_date, 'hours': total_hours } )
 	return summary_records
 
+def weeklyize_records(summary_records):
+	day_names = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ]
+	weekly_summary = []
+	week_summary = { 'sunday': 0.0, 'monday': 0.0, 'tuesday': 0.0, 'wednesday': 0.0, 'thursday': 0.0, 'friday': 0.0, 'saturday': 0.0, 'hours': 0.0, 'date': '2013-01-02' }
+	hours = 0.0
+	for r in summary_records:
+		current_date = r['date']
+		day_of_week_name = day_names[current_date.weekday()]
+		# put time in dictionary
+		week_summary[day_of_week_name] = r['hours']
+		hours += r['hours']
+		week_summary['hours'] = hours
+		# calc sunday date, put in dictionary
+		if day_of_week_name == 'sunday':
+			week_summary['date'] = current_date
+		else:
+			days_to_sunday = datetime.timedelta(current_date.weekday() + 1)
+			sunday_date = current_date - days_to_sunday
+			week_summary['date'] = sunday_date
+		if day_of_week_name == 'saturday':
+			weekly_summary.append(week_summary)
+			week_summary = { 'sunday': 0.0, 'monday': 0.0, 'tuesday': 0.0, 'wednesday': 0.0, 'thursday': 0.0, 'friday': 0.0, 'saturday': 0.0, 'hours': 0.0, 'date': '2013-01-02' }
+			hours = 0.0
+	if hours > 0.0:
+		weekly_summary.append(week_summary)
+	return weekly_summary
+
 def totalize_hours(records):
 	total_hours = 0.0
 	for r in records:
@@ -81,14 +108,16 @@ def get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datet
 	sorted_records = get_records_from_yast(yast, start_datetime, end_datetime, project_code)
 	yast_status = yast.getStatus()
 	summary_records = []
+	weekly_summary = []
 	if yast_status == 0:
 		complete_records = get_summary_info(sorted_records)
 		for single_date in daterange(start_date, end_date):
 			complete_records.append( { 'date': single_date, 'hours': 0 } )
 		complete_sorted_records = sorted(complete_records, key=lambda k: k['date'])
 		summary_records = summarize_records(complete_sorted_records, start_date, end_date)
+		weekly_summary = weeklyize_records(summary_records)
 		total_hours = totalize_hours(complete_sorted_records)
-	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'total_hours': total_hours }
+	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'weekly_summary': weekly_summary, 'total_hours': total_hours }
 	return values
 			
 def yast_error(yast, template):
@@ -170,7 +199,13 @@ class Timesheet(HoursReport):
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
 
 	def write_response(self, values):
-		response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
+		start_date = values['start']
+		end_date = values['end']
+		threshold = datetime.timedelta(15)
+		if end_date - start_date < threshold:
+			response_template = jinja_environment.get_template('templates/timesheet.html.jinja')
+		else:
+			response_template = jinja_environment.get_template('templates/timesheet-month.html.jinja')
 		self.response.out.write(response_template.render(values))
 	
 class HoursReportHtml(HoursReport):
