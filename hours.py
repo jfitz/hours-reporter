@@ -1,13 +1,24 @@
-from google.appengine.api import users
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-import time, re
+import time
 import datetime
-from yastlib import *
-from parse_datetime import *
+import re
 import jinja2
 import os
 import json
+from parse_datetime import *
+from yastlib import *
+from google.appengine.api import users
+from google.appengine.ext import ndb
+import webapp2
+
+DEFAULT_CONTRACTOR_ID = 'jfitz@computer.org'
+
+def contractor_info_key(contractor_id=DEFAULT_CONTRACTOR_ID):
+	return ndb.Key('ContractorList', contractor_id)
+
+class ContractorInfo(ndb.Model):
+	contractor_name = ndb.StringProperty(indexed=False)
+	approver_name = ndb.StringProperty(indexed=False)
+	approver_contact = ndb.StringProperty(indexed=False)
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -129,22 +140,34 @@ def yast_error(yast, template):
 	template_values = { 'message': error }
 	return template.render(template_values)
 
-class MainPage(webapp.RequestHandler):
+class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template_values = { }
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class SelectReport(webapp.RequestHandler):
+class SelectReport(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
 		bala = self.request.get('bala')
-		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala }
+		# retrieve user info
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(1)
+		if len(contractor_infos) > 0:
+			contractor_info = contractor_infos[0]
+			contractor_name = contractor_info.contractor_name
+			approver_name = contractor_info.approver_name
+			approver_contact = contractor_info.approver_contact
+		else:
+			contractor_name = ''
+			approver_name = ''
+			approver_contact = ''
+		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
 		template = jinja_environment.get_template('templates/select.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class HoursReport(webapp.RequestHandler):
+class HoursReport(webapp2.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(HoursReport, self).__init__(*args, **kwargs)
 	
@@ -180,6 +203,11 @@ class HoursReport(webapp.RequestHandler):
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact') 
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
+		contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
+		contractor_info.contractor_name = contractor_name
+		contractor_info.approver_name = approver_name
+		contractor_info.approver_contact = approver_contact
+		self.store_info(contractor_info)
 
 		# connect to yast.com and retrieve data
 		falabala = fala + str(len(fala)) + bala
@@ -198,6 +226,9 @@ class Timesheet(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
 
+	def store_info(self, contractor_info):
+		contractor_info.put()
+
 	def write_response(self, values):
 		start_date = values['start']
 		end_date = values['end']
@@ -213,6 +244,9 @@ class HoursReportHtml(HoursReport):
 		super(HoursReportHtml, self).__init__(*args, **kwargs)
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
+
+	def store_info(self, contractor_info):
+		return
 
 	def write_response(self, values):
 		response_template = jinja_environment.get_template('templates/detail-hours.html.jinja')
@@ -234,6 +268,9 @@ class HoursReportDownload(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
+	def store_info(self, contractor_info):
+		return
+
 	def write_response(self, values):
 		self.response.headers['Content-Type'] = self.content_type
 		if self.response_template:
@@ -241,7 +278,7 @@ class HoursReportDownload(HoursReport):
 		else:
 			self.response.out.write(self.response_json(values))
 
-application = webapp.WSGIApplication(
+application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
 		('/select', SelectReport),
