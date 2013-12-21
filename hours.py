@@ -84,8 +84,9 @@ def summarize_records(records, start_date, end_date):
 def weeklyize_records(summary_records):
 	day_names = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ]
 	weekly_summary = []
-	week_summary = { 'sunday': 0.0, 'monday': 0.0, 'tuesday': 0.0, 'wednesday': 0.0, 'thursday': 0.0, 'friday': 0.0, 'saturday': 0.0, 'hours': 0.0, 'date': '2013-01-02' }
+	week_summary = { 'sunday': '', 'monday': '', 'tuesday': '', 'wednesday': '', 'thursday': '', 'friday': '', 'saturday': '', 'hours': 0.0, 'date': '2013-01-02' }
 	hours = 0.0
+	week_has_data = False
 	for r in summary_records:
 		current_date = r['date']
 		day_of_week_name = day_names[current_date.weekday()]
@@ -100,11 +101,13 @@ def weeklyize_records(summary_records):
 			days_to_sunday = datetime.timedelta(current_date.weekday() + 1)
 			sunday_date = current_date - days_to_sunday
 			week_summary['date'] = sunday_date
+		week_has_data = True
 		if day_of_week_name == 'saturday':
 			weekly_summary.append(week_summary)
-			week_summary = { 'sunday': 0.0, 'monday': 0.0, 'tuesday': 0.0, 'wednesday': 0.0, 'thursday': 0.0, 'friday': 0.0, 'saturday': 0.0, 'hours': 0.0, 'date': '2013-01-02' }
+			week_summary = { 'sunday': '', 'monday': '', 'tuesday': '', 'wednesday': '', 'thursday': '', 'friday': '', 'saturday': '', 'hours': 0.0, 'date': '2013-01-02' }
 			hours = 0.0
-	if hours > 0.0:
+			week_has_data = False
+	if week_has_data:
 		weekly_summary.append(week_summary)
 	return weekly_summary
 

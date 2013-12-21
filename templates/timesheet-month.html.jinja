@@ -4,6 +4,15 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Hours reporter</title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<style type="text/css">
+th.column_indent { width: 2%; }
+th.column_date { width: 14%; text-align: right; }
+th.column_hours { width: 10%; text-align: right; }
+th.column_weekday { width: 9%; text-align: right; }
+td.column_date { text-align: right; }
+td.column_hours { text-align: right; }
+td.column_weekday { text-align: right; }
+</style>
 </head>
 <body>
 <h1>Timesheet</h1>
@@ -15,35 +24,38 @@
 {% if status == 0 %}
 <table>
 <tr>
-<th width="20">&nbsp;</th>
-<th align="left">Week starting</th>
-<th align="right">Hours</th>
-<th align="left">Sunday</th>
-<th align="left">Monday</th>
-<th align="left">Tuesday</th>
-<th align="left">Wednesday</th>
-<th align="left">Thursday</th>
-<th align="left">Friday</th>
-<th align="left">Saturday</th>
+<th class="column_indent">&nbsp;</th>
+<th class="column_date">Week starting</th>
+<th class="column_hours">Hours</th>
+<th class="column_indent">&nbsp;</th>
+<th class="column_weekday">Sunday</th>
+<th class="column_weekday">Monday</th>
+<th class="column_weekday">Tuesday</th>
+<th class="column_weekday">Wednesday</th>
+<th class="column_weekday">Thursday</th>
+<th class="column_weekday">Friday</th>
+<th class="column_weekday">Saturday</th>
+<th">&nbsp;</th>
 </tr>
 {% for r in weekly_summary %}
 <tr>
-<td width="20">&nbsp;</td>
-<td>{{ r['date'] }}</td>
-<td align="right">{{ r['hours'] }}</td>
-<td align="right">{{ r['sunday'] }}</td>
-<td align="right">{{ r['monday'] }}</td>
-<td align="right">{{ r['tuesday'] }}</td>
-<td align="right">{{ r['wednesday'] }}</td>
-<td align="right">{{ r['thursday'] }}</td>
-<td align="right">{{ r['friday'] }}</td>
-<td align="right">{{ r['saturday'] }}</td>
+<td>&nbsp;</td>
+<td class="column_date">{{ r['date'] }}</td>
+<td class="column_hours">{{ r['hours'] }}</td>
+<td>&nbsp;</td>
+<td class="column_weekday">{{ r['sunday'] }}</td>
+<td class="column_weekday">{{ r['monday'] }}</td>
+<td class="column_weekday">{{ r['tuesday'] }}</td>
+<td class="column_weekday">{{ r['wednesday'] }}</td>
+<td class="column_weekday">{{ r['thursday'] }}</td>
+<td class="column_weekday">{{ r['friday'] }}</td>
+<td class="column_weekday">{{ r['saturday'] }}</td>
 </tr>
 {% endfor %}
 <tr>
-<td width="20">&nbsp;</td>
-<td>Total:</td>
-<td align="right">{{ total_hours }}</td>
+<td>&nbsp;</td>
+<td class="column_date">Total:</td>
+<td class="column_hours">{{ total_hours }}</td>
 </tr>
 </table>
 {% else %}
