@@ -19,8 +19,8 @@ function showDate(date) {
 }
   </script></head>
 <body>
-<h1>Hours report</h1>
-<form method="GET" action="details">
+<h1><img alt="Hours reporter logo" src="images/logo.png"></h1>
+<form method="GET" action="details" target="_blank">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
@@ -29,7 +29,7 @@ function showDate(date) {
 <input type="submit" value="Details">
 </form>
 <p></p>
-<form method="GET" action="timesheet">
+<form method="GET" action="timesheet" target="_blank">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
