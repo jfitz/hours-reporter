@@ -10,8 +10,6 @@
 $(function() {
 	$('#popupDatepicker1').datepick();
 	$('#popupDatepicker2').datepick();
-	$('#popupDatepicker3').datepick();
-	$('#popupDatepicker4').datepick();
 });
 
 function showDate(date) {
@@ -21,17 +19,15 @@ function showDate(date) {
 </head>
 <body>
 <img alt="Hours reporter logo" src="images/logo.png">
-<form method="GET" action="detail-form">
+<form method="GET" action="timesheet-report" target="_blank">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <input type="hidden" name="fala" value="{{ fala }}">
 <input type="hidden" name="bala" value="{{ bala }}">
-<input type="submit" value="Details">
-</form>
-<p></p>
-<form method="GET" action="timesheet-form" target="_blank">
-<input type="hidden" name="contractor_id" value="{{ contractor_id }}">
-<input type="hidden" name="fala" value="{{ fala }}">
-<input type="hidden" name="bala" value="{{ bala }}">
+<p>Submitter name: <input type="text" name="contractor_name" value="{{ contractor_name }}"></p>
+<p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
+<p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
+<p>Starting date: <input type="text" id="popupDatepicker1" name="start_date"></p>
+<p>Ending date: <input type="text" id="popupDatepicker2" name="end_date"></p>
 <input type="submit" value="Timesheet">
 </form>
 <p></p>

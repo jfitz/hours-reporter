@@ -170,6 +170,15 @@ class SelectReport(webapp2.RequestHandler):
 		template = jinja_environment.get_template('templates/select.html.jinja')
 		self.response.out.write(template.render(template_values))
 
+class DetailForm(webapp2.RequestHandler):
+	def get(self):
+		contractor_id = self.request.get('contractor_id')
+		fala = self.request.get('fala')
+		bala = self.request.get('bala')
+		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala }
+		response_template = jinja_environment.get_template('templates/detail-form.html.jinja')
+		self.response.out.write(response_template.render(user_dict))
+	
 class HoursReport(webapp2.RequestHandler):
 	def __init__(self, *args, **kwargs):
 		super(HoursReport, self).__init__(*args, **kwargs)
@@ -223,9 +232,30 @@ class HoursReport(webapp2.RequestHandler):
 		else:
 			self.response.out.write(yast_error(yast, self.error_template))
 
-class Timesheet(HoursReport):
+class TimesheetForm(webapp2.RequestHandler):
+	def get(self):
+		contractor_id = self.request.get('contractor_id')
+		fala = self.request.get('fala')
+		bala = self.request.get('bala')
+		# retrieve user info
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(1)
+		if len(contractor_infos) > 0:
+			contractor_info = contractor_infos[0]
+			contractor_name = contractor_info.contractor_name
+			approver_name = contractor_info.approver_name
+			approver_contact = contractor_info.approver_contact
+		else:
+			contractor_name = ''
+			approver_name = ''
+			approver_contact = ''
+		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+		template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
+		self.response.out.write(template.render(template_values))
+	
+class TimesheetReport(HoursReport):
 	def __init__(self, *args, **kwargs):
-		super(Timesheet, self).__init__(*args, **kwargs)
+		super(TimesheetReport, self).__init__(*args, **kwargs)
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
 
@@ -285,9 +315,11 @@ application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
 		('/select', SelectReport),
-		('/details', HoursReportHtml),
+		('/detail-form', DetailForm),
+		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
-		('/timesheet', Timesheet)
+		('/timesheet-form', TimesheetForm),
+		('/timesheet-report', TimesheetReport)
 	],
 	debug=False)
 
