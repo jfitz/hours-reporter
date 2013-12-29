@@ -149,7 +149,7 @@ class MainPage(webapp2.RequestHandler):
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class SelectReport(webapp2.RequestHandler):
+class LoginPage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
@@ -168,13 +168,16 @@ class SelectReport(webapp2.RequestHandler):
 			approver_contact = ''
 		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
 		template = jinja_environment.get_template('templates/select.html.jinja')
+		self.response.set_cookie('contractor_id', contractor_id)
+		self.response.set_cookie('fala', fala)
+		self.response.set_cookie('bala', bala)
 		self.response.out.write(template.render(template_values))
 
 class DetailForm(webapp2.RequestHandler):
 	def get(self):
-		contractor_id = self.request.get('contractor_id')
-		fala = self.request.get('fala')
-		bala = self.request.get('bala')
+		contractor_id = self.request.cookies.get('contractor_id')
+		fala = self.request.cookies.get('fala')
+		bala = self.request.cookies.get('bala')
 		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala }
 		response_template = jinja_environment.get_template('templates/detail-form.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
@@ -208,9 +211,9 @@ class HoursReport(webapp2.RequestHandler):
 		# build dictionary of user values
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
-		contractor_id = self.request.get('contractor_id')
-		fala = self.request.get('fala')
-		bala = self.request.get('bala')
+		contractor_id = self.request.cookies.get('contractor_id')
+		fala = self.request.cookies.get('fala')
+		bala = self.request.cookies.get('bala')
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact') 
@@ -234,9 +237,9 @@ class HoursReport(webapp2.RequestHandler):
 
 class TimesheetForm(webapp2.RequestHandler):
 	def get(self):
-		contractor_id = self.request.get('contractor_id')
-		fala = self.request.get('fala')
-		bala = self.request.get('bala')
+		contractor_id = self.request.cookies.get('contractor_id')
+		fala = self.request.cookies.get('fala')
+		bala = self.request.cookies.get('bala')
 		# retrieve user info
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
@@ -314,7 +317,7 @@ class HoursReportDownload(HoursReport):
 application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
-		('/select', SelectReport),
+		('/login', LoginPage),
 		('/detail-form', DetailForm),
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
