@@ -3,37 +3,25 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Hours reporter</title>
-  <style type="text/css">@import "css/jquery.datepick.css";</style> 
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-  <script type="text/javascript" src="js/jquery.datepick.js"></script>
-  <script type="text/javascript">
-$(function() {
-	$('#popupDatepicker1').datepick();
-	$('#popupDatepicker2').datepick();
-});
-
-function showDate(date) {
-	alert('The date chosen is ' + date);
-}
-  </script>
 </head>
 <body>
 <img alt="Hours reporter logo" src="images/logo.png">
 <table summary="menu" >
 <tr>
-<td class="menu"><a href="edit-profile">Edit Profile</a></td>
+<td class="menu">Edit Profile</td>
 <td class="menu"><a href="detail-form">Details</a></td>
 <td class="menu"><a href="timesheet-form">Timesheet</a></td>
 <td class="menu">Monthly Summary</td>
 </tr>
 </table>
-<form method="GET" action="timesheet-report" target="_blank">
+<h1>Edit profile</h1>
+<h2>User: {{ contractor_id }}</h2>
+<form method="GET" action="edit-profile-done">
 <p>Submitter name: <input type="text" name="contractor_name" value="{{ contractor_name }}"></p>
 <p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
 <p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
-<p>Starting date: <input type="text" id="popupDatepicker1" name="start_date"></p>
-<p>Ending date: <input type="text" id="popupDatepicker2" name="end_date"></p>
-<input type="submit" value="Timesheet">
+<a href="/select" >Cancel</a><input type="submit" value="Save">
 </form>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 

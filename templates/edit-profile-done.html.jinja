@@ -3,17 +3,23 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Hours reporter</title>
-  <style type="text/css">@import "css/jquery.datepick.css";</style> 
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 </head>
 <body>
 <img alt="Hours reporter logo" src="images/logo.png">
-<form method="GET" action="select">
-<p>Contractor ID (or e-mail): <input type="text" name="contractor_id"></p>
-<p>Password 1: <input type="password" name="fala"></p>
-<p>Password 2: <input type="password" name="bala"></p>
-<input type="submit" value="Login">
-</form>
+<table summary="menu" >
+<tr>
+<td class="menu"><a href="edit-profile">Edit Profile</a></td>
+<td class="menu"><a href="detail-form">Details</a></td>
+<td class="menu"><a href="timesheet-form">Timesheet</a></td>
+<td class="menu">Monthly Summary</td>
+</tr>
+</table>
+<h1>Profile saved:</h1>
+<h2>User: {{ contractor_id }}</h2>
+<p>Submitter name: {{ contractor_name }}</p>
+<p>Approver name: {{ approver_name }}</p>
+<p>Approver contact: {{ approver_contact }}</p>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="Powered by Google App Engine" />

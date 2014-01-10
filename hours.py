@@ -149,16 +149,26 @@ class MainPage(webapp2.RequestHandler):
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class LoginPage(webapp2.RequestHandler):
+class SelectPage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.get('contractor_id')
 		fala = self.request.get('fala')
 		bala = self.request.get('bala')
+		template_values = { }
+		template = jinja_environment.get_template('templates/select.html.jinja')
+		self.response.set_cookie('contractor_id', contractor_id)
+		self.response.set_cookie('fala', fala)
+		self.response.set_cookie('bala', bala)
+		self.response.out.write(template.render(template_values))
+
+class EditProfilePage(webapp2.RequestHandler):
+	def get(self):
+		contractor_id = self.request.cookies.get('contractor_id')
 		# retrieve user info
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
-			contractor_info = contractor_infos[0]
+			contractor_info = contractor_infos[len(contractor_infos) - 1]
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
 			approver_contact = contractor_info.approver_contact
@@ -166,12 +176,25 @@ class LoginPage(webapp2.RequestHandler):
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
-		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
-		template = jinja_environment.get_template('templates/select.html.jinja')
-		self.response.set_cookie('contractor_id', contractor_id)
-		self.response.set_cookie('fala', fala)
-		self.response.set_cookie('bala', bala)
-		self.response.out.write(template.render(template_values))
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
+		self.response.out.write(response_template.render(user_dict))
+
+class EditProfileDonePage(webapp2.RequestHandler):
+ def get(self):
+		contractor_id = self.request.cookies.get('contractor_id')
+		# retrieve user info
+		contractor_name = self.request.get('contractor_name')
+		approver_name = self.request.get('approver_name')
+		approver_contact = self.request.get('approver_contact')
+		contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
+		contractor_info.contractor_name = contractor_name
+		contractor_info.approver_name = approver_name
+		contractor_info.approver_contact = approver_contact
+		contractor_info.put()
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+		response_template = jinja_environment.get_template('templates/edit-profile-done.html.jinja')
+		self.response.out.write(response_template.render(user_dict))
 
 class DetailForm(webapp2.RequestHandler):
 	def get(self):
@@ -218,11 +241,6 @@ class HoursReport(webapp2.RequestHandler):
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact') 
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
-		contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
-		contractor_info.contractor_name = contractor_name
-		contractor_info.approver_name = approver_name
-		contractor_info.approver_contact = approver_contact
-		self.store_info(contractor_info)
 
 		# connect to yast.com and retrieve data
 		falabala = fala + str(len(fala)) + bala
@@ -262,9 +280,6 @@ class TimesheetReport(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/timesheet-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/timesheet-error.html.jinja')
 
-	def store_info(self, contractor_info):
-		contractor_info.put()
-
 	def write_response(self, values):
 		start_date = values['start']
 		end_date = values['end']
@@ -280,9 +295,6 @@ class HoursReportHtml(HoursReport):
 		super(HoursReportHtml, self).__init__(*args, **kwargs)
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
-
-	def store_info(self, contractor_info):
-		return
 
 	def write_response(self, values):
 		response_template = jinja_environment.get_template('templates/detail-hours.html.jinja')
@@ -304,9 +316,6 @@ class HoursReportDownload(HoursReport):
 		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
 		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
 
-	def store_info(self, contractor_info):
-		return
-
 	def write_response(self, values):
 		self.response.headers['Content-Type'] = self.content_type
 		if self.response_template:
@@ -317,7 +326,9 @@ class HoursReportDownload(HoursReport):
 application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
-		('/login', LoginPage),
+		('/select', SelectPage),
+		('/edit-profile', EditProfilePage),
+		('/edit-profile-done', EditProfileDonePage),
 		('/detail-form', DetailForm),
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
