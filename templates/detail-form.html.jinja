@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Hours reporter</title>
-  <style type="text/css">@import "css/jquery.datepick.css";</style> 
+{% include "templates/css.html" %}
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
   <script type="text/javascript" src="js/jquery.datepick.js"></script>
   <script type="text/javascript">
@@ -11,12 +11,7 @@ $(function() {
 	$('#popupDatepicker1').datepick();
 	$('#popupDatepicker2').datepick();
 });
-
-function showDate(date) {
-	alert('The date chosen is ' + date);
-}
   </script>
-  <style type="text/css">@import "css/hours_reporter.css";</style>
 </head>
 <body>
 {% include "templates/logo.html" %}
