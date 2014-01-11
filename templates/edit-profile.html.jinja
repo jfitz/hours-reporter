@@ -4,17 +4,11 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Hours reporter</title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <style type="text/css">@import "css/hours_reporter.css";</style>
 </head>
 <body>
-<img alt="Hours reporter logo" src="images/logo.png">
-<table summary="menu" >
-<tr>
-<td class="menu">Edit Profile</td>
-<td class="menu"><a href="detail-form">Details</a></td>
-<td class="menu"><a href="timesheet-form">Timesheet</a></td>
-<td class="menu">Monthly Summary</td>
-</tr>
-</table>
+{% include "templates/logo.html" %}
+{% include "templates/menu.html" %}
 <h1>Edit profile</h1>
 <h2>User: {{ contractor_id }}</h2>
 <form method="GET" action="edit-profile-done">

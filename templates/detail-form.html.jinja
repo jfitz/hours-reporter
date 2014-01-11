@@ -16,17 +16,11 @@ function showDate(date) {
 	alert('The date chosen is ' + date);
 }
   </script>
+  <style type="text/css">@import "css/hours_reporter.css";</style>
 </head>
 <body>
-<img alt="Hours reporter logo" src="images/logo.png">
-<table summary="menu" >
-<tr>
-<td class="menu"><a href="edit-profile">Edit Profile</a></td>
-<td class="menu"><a href="detail-form">Details</a></td>
-<td class="menu"><a href="timesheet-form">Timesheet</a></td>
-<td class="menu">Monthly Summary</td>
-</tr>
-</table>
+{% include "templates/logo.html" %}
+{% include "templates/menu.html" %}
 <h1>Task detail report</h1>
 <p>Enter dates for task details:</p>
 <form method="GET" action="details-report" target="_blank">
