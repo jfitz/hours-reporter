@@ -162,7 +162,6 @@ class SelectPage(webapp2.RequestHandler):
 class EditProfilePage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
-		# retrieve user info
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
@@ -185,7 +184,6 @@ class EditProfilePage(webapp2.RequestHandler):
 class EditProfileDonePage(webapp2.RequestHandler):
  def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
-		# retrieve user info
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact')
@@ -222,6 +220,10 @@ class HoursReport(webapp2.RequestHandler):
 		return json.dumps( t_list )
 	
 	def get(self):
+		contractor_name = self.request.get('contractor_name')
+		approver_name = self.request.get('approver_name')
+		approver_contact = self.request.get('approver_contact')
+
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
 			end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%m/%d/%Y")
@@ -234,7 +236,6 @@ class HoursReport(webapp2.RequestHandler):
 				self.response.out.write(self.date_error_template.render(template_values))
 				return
 
-		# build dictionary of user values
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
 
@@ -243,15 +244,9 @@ class HoursReport(webapp2.RequestHandler):
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
 			contractor_info = contractor_infos[0]
-			contractor_name = contractor_info.contractor_name
-			approver_name = contractor_info.approver_name
-			approver_contact = contractor_info.approver_contact
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
 		else:
-			contractor_name = ''
-			approver_name = ''
-			approver_contact = ''
 			yast_id = ''
 			yast_password = ''
 
@@ -270,7 +265,6 @@ class HoursReport(webapp2.RequestHandler):
 class TimesheetForm(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
-		# retrieve user info
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
