@@ -9,11 +9,13 @@
 <body>
 {% include "templates/logo.html" %}
 {% include "templates/menu.html" %}
-<h1>Profile saved:</h1>
+<h1>Current profile:</h1>
 <h2>User: {{ contractor_id }}</h2>
 <p>Submitter name: {{ contractor_name }}</p>
 <p>Approver name: {{ approver_name }}</p>
 <p>Approver contact: {{ approver_contact }}</p>
+<p>Yast ID: {{ yast_id }}</p>
+<p>Yast Password: {{ yast_password }}</p>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="Powered by Google App Engine" />

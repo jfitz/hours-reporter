@@ -19,6 +19,8 @@ class ContractorInfo(ndb.Model):
 	contractor_name = ndb.StringProperty(indexed=False)
 	approver_name = ndb.StringProperty(indexed=False)
 	approver_contact = ndb.StringProperty(indexed=False)
+	yast_id = ndb.StringProperty(indexed=False)
+	yast_password = ndb.StringProperty(indexed=False)
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -152,13 +154,9 @@ class MainPage(webapp2.RequestHandler):
 class SelectPage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.get('contractor_id')
-		fala = self.request.get('fala')
-		bala = self.request.get('bala')
 		template_values = { }
 		template = jinja_environment.get_template('templates/select.html.jinja')
 		self.response.set_cookie('contractor_id', contractor_id)
-		self.response.set_cookie('fala', fala)
-		self.response.set_cookie('bala', bala)
 		self.response.out.write(template.render(template_values))
 
 class EditProfilePage(webapp2.RequestHandler):
@@ -168,15 +166,19 @@ class EditProfilePage(webapp2.RequestHandler):
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
-			contractor_info = contractor_infos[len(contractor_infos) - 1]
+			contractor_info = contractor_infos[0]
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
 			approver_contact = contractor_info.approver_contact
+			yast_id = contractor_info.yast_id
+			yast_password = contractor_info.yast_password
 		else:
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+			yast_id = ''
+			yast_password = ''
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password }
 		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
@@ -187,21 +189,22 @@ class EditProfileDonePage(webapp2.RequestHandler):
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact')
+		yast_id = self.request.get('yast_id')
+		yast_password = self.request.get('yast_password')
 		contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
 		contractor_info.contractor_name = contractor_name
 		contractor_info.approver_name = approver_name
 		contractor_info.approver_contact = approver_contact
+		contractor_info.yast_id = yast_id
+		contractor_info.yast_password = yast_password
 		contractor_info.put()
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password }
 		response_template = jinja_environment.get_template('templates/edit-profile-done.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
 class DetailForm(webapp2.RequestHandler):
 	def get(self):
-		contractor_id = self.request.cookies.get('contractor_id')
-		fala = self.request.cookies.get('fala')
-		bala = self.request.cookies.get('bala')
-		user_dict = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala }
+		user_dict = { }
 		response_template = jinja_environment.get_template('templates/detail-form.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 	
@@ -234,18 +237,29 @@ class HoursReport(webapp2.RequestHandler):
 		# build dictionary of user values
 		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
+
 		contractor_id = self.request.cookies.get('contractor_id')
-		fala = self.request.cookies.get('fala')
-		bala = self.request.cookies.get('bala')
-		contractor_name = self.request.get('contractor_name')
-		approver_name = self.request.get('approver_name')
-		approver_contact = self.request.get('approver_contact') 
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'fala': fala, 'bala': bala, 'start': start_date, 'end': end_date }
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(1)
+		if len(contractor_infos) > 0:
+			contractor_info = contractor_infos[0]
+			contractor_name = contractor_info.contractor_name
+			approver_name = contractor_info.approver_name
+			approver_contact = contractor_info.approver_contact
+			yast_id = contractor_info.yast_id
+			yast_password = contractor_info.yast_password
+		else:
+			contractor_name = ''
+			approver_name = ''
+			approver_contact = ''
+			yast_id = ''
+			yast_password = ''
+
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'start': start_date, 'end': end_date }
 
 		# connect to yast.com and retrieve data
-		falabala = fala + str(len(fala)) + bala
 		yast = Yast()
-		hash = yast.login(contractor_id, falabala)
+		hash = yast.login(yast_id, yast_password)
 		if hash != False:
 			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
 			values = dict(user_dict.items() + yast_dict.items())
@@ -256,8 +270,6 @@ class HoursReport(webapp2.RequestHandler):
 class TimesheetForm(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
-		fala = self.request.cookies.get('fala')
-		bala = self.request.cookies.get('bala')
 		# retrieve user info
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
@@ -270,7 +282,7 @@ class TimesheetForm(webapp2.RequestHandler):
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
-		template_values = { 'contractor_id': contractor_id, 'fala': fala, 'bala': bala, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+		template_values = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
 		template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
 		self.response.out.write(template.render(template_values))
 	
