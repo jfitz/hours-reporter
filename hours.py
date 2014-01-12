@@ -163,8 +163,9 @@ class EditProfilePage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(1)
+		contractor_infos = contractor_info_query.fetch(10)
 		if len(contractor_infos) > 0:
+			print 'number of profiles: ' + str(len(contractor_infos))
 			contractor_info = contractor_infos[0]
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
@@ -184,12 +185,25 @@ class EditProfilePage(webapp2.RequestHandler):
 class EditProfileDonePage(webapp2.RequestHandler):
  def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
-		contractor_name = self.request.get('contractor_name')
-		approver_name = self.request.get('approver_name')
-		approver_contact = self.request.get('approver_contact')
-		yast_id = self.request.get('yast_id')
-		yast_password = self.request.get('yast_password')
-		contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
+		# get the existing item from the datastore
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(1)
+		if len(contractor_infos) > 0:
+			# update the existing item
+			contractor_info = contractor_infos[0]
+			contractor_name = self.request.get('contractor_name')
+			approver_name = self.request.get('approver_name')
+			approver_contact = self.request.get('approver_contact')
+			yast_id = self.request.get('yast_id')
+			yast_password = self.request.get('yast_password')
+		else:
+			# create an item
+			contractor_name = self.request.get('contractor_name')
+			approver_name = self.request.get('approver_name')
+			approver_contact = self.request.get('approver_contact')
+			yast_id = self.request.get('yast_id')
+			yast_password = self.request.get('yast_password')
+			contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
 		contractor_info.contractor_name = contractor_name
 		contractor_info.approver_name = approver_name
 		contractor_info.approver_contact = approver_contact
