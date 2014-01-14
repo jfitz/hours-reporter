@@ -21,6 +21,7 @@ class ContractorInfo(ndb.Model):
 	approver_contact = ndb.StringProperty(indexed=False)
 	yast_id = ndb.StringProperty(indexed=False)
 	yast_password = ndb.StringProperty(indexed=False)
+	yast_parent_project_id = ndb.IntegerProperty(indexed=False)
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -172,13 +173,15 @@ class EditProfilePage(webapp2.RequestHandler):
 			approver_contact = contractor_info.approver_contact
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
+			yast_parent_project_id = str(contractor_info.yast_parent_project_id)
 		else:
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
 			yast_id = ''
 			yast_password = ''
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password }
+			yast_parent_project_id = '0'
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
 		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
@@ -196,6 +199,7 @@ class EditProfileDonePage(webapp2.RequestHandler):
 			approver_contact = self.request.get('approver_contact')
 			yast_id = self.request.get('yast_id')
 			yast_password = self.request.get('yast_password')
+			yast_parent_project_id = self.request.get('yast_parent_project_id')
 		else:
 			# create an item
 			contractor_name = self.request.get('contractor_name')
@@ -203,12 +207,14 @@ class EditProfileDonePage(webapp2.RequestHandler):
 			approver_contact = self.request.get('approver_contact')
 			yast_id = self.request.get('yast_id')
 			yast_password = self.request.get('yast_password')
+			yast_parent_project_id = self.request.get('yast_parent_project_id')
 			contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
 		contractor_info.contractor_name = contractor_name
 		contractor_info.approver_name = approver_name
 		contractor_info.approver_contact = approver_contact
 		contractor_info.yast_id = yast_id
 		contractor_info.yast_password = yast_password
+		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
 		contractor_info.put()
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password }
 		response_template = jinja_environment.get_template('templates/edit-profile-done.html.jinja')
@@ -260,9 +266,11 @@ class HoursReport(webapp2.RequestHandler):
 			contractor_info = contractor_infos[0]
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
+			yast_parent_project_id = contractor_info.yast_parent_project_id
 		else:
 			yast_id = ''
 			yast_password = ''
+			yast_parent_project_id = 0 
 
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'start': start_date, 'end': end_date }
 
@@ -270,7 +278,7 @@ class HoursReport(webapp2.RequestHandler):
 		yast = Yast()
 		hash = yast.login(yast_id, yast_password)
 		if hash != False:
-			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, 2015302)
+			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, yast_parent_project_id)
 			values = dict(user_dict.items() + yast_dict.items())
 			self.write_response(values)
 		else:
