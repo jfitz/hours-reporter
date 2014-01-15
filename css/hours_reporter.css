@@ -1,2 +1,35 @@
 /* CSS for Hours Reporter */
-td.menu { padding: 1px 25px 1px 25px; }
+.submitbutton {
+  -webkit-appearance: none;
+  display: block;
+  margin: 5px;
+  width: 135px;
+  height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  background: #bbaa77;
+  color: white;
+  font: -webkit-small-control;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.pagemenulink {
+  -webkit-appearance: none;
+  display: block;
+  margin: 5px;
+  width: 100px;
+  height: 20px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  background: #bbaa77;
+  color: white;
+  font: -webkit-small-control;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+}

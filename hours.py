@@ -188,26 +188,20 @@ class EditProfilePage(webapp2.RequestHandler):
 class EditProfileDonePage(webapp2.RequestHandler):
  def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
+		contractor_name = self.request.get('contractor_name')
+		approver_name = self.request.get('approver_name')
+		approver_contact = self.request.get('approver_contact')
+		yast_id = self.request.get('yast_id')
+		yast_password = self.request.get('yast_password')
+		yast_parent_project_id = self.request.get('yast_parent_project_id')
 		# get the existing item from the datastore
 		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 		contractor_infos = contractor_info_query.fetch(1)
 		if len(contractor_infos) > 0:
 			# update the existing item
 			contractor_info = contractor_infos[0]
-			contractor_name = self.request.get('contractor_name')
-			approver_name = self.request.get('approver_name')
-			approver_contact = self.request.get('approver_contact')
-			yast_id = self.request.get('yast_id')
-			yast_password = self.request.get('yast_password')
-			yast_parent_project_id = self.request.get('yast_parent_project_id')
 		else:
 			# create an item
-			contractor_name = self.request.get('contractor_name')
-			approver_name = self.request.get('approver_name')
-			approver_contact = self.request.get('approver_contact')
-			yast_id = self.request.get('yast_id')
-			yast_password = self.request.get('yast_password')
-			yast_parent_project_id = self.request.get('yast_parent_project_id')
 			contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
 		contractor_info.contractor_name = contractor_name
 		contractor_info.approver_name = approver_name
@@ -216,7 +210,7 @@ class EditProfileDonePage(webapp2.RequestHandler):
 		contractor_info.yast_password = yast_password
 		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
 		contractor_info.put()
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password }
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
 		response_template = jinja_environment.get_template('templates/edit-profile-done.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
