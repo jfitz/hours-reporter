@@ -160,6 +160,31 @@ class SelectPage(webapp2.RequestHandler):
 		self.response.set_cookie('contractor_id', contractor_id)
 		self.response.out.write(template.render(template_values))
 
+class DisplayProfilePage(webapp2.RequestHandler):
+ def get(self):
+		contractor_id = self.request.cookies.get('contractor_id')
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(10)
+		if len(contractor_infos) > 0:
+			print 'number of profiles: ' + str(len(contractor_infos))
+			contractor_info = contractor_infos[0]
+			contractor_name = contractor_info.contractor_name
+			approver_name = contractor_info.approver_name
+			approver_contact = contractor_info.approver_contact
+			yast_id = contractor_info.yast_id
+			yast_password = contractor_info.yast_password
+			yast_parent_project_id = str(contractor_info.yast_parent_project_id)
+		else:
+			contractor_name = ''
+			approver_name = ''
+			approver_contact = ''
+			yast_id = ''
+			yast_password = ''
+			yast_parent_project_id = '0'
+		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
+		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
+		self.response.out.write(response_template.render(user_dict))
+ 	
 class EditProfilePage(webapp2.RequestHandler):
 	def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
@@ -185,7 +210,7 @@ class EditProfilePage(webapp2.RequestHandler):
 		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
-class EditProfileDonePage(webapp2.RequestHandler):
+class SaveProfilePage(webapp2.RequestHandler):
  def get(self):
 		contractor_id = self.request.cookies.get('contractor_id')
 		contractor_name = self.request.get('contractor_name')
@@ -211,7 +236,7 @@ class EditProfileDonePage(webapp2.RequestHandler):
 		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
 		contractor_info.put()
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
-		response_template = jinja_environment.get_template('templates/edit-profile-done.html.jinja')
+		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
 class DetailForm(webapp2.RequestHandler):
@@ -349,8 +374,9 @@ application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
 		('/select', SelectPage),
+		('/display-profile', DisplayProfilePage),
 		('/edit-profile', EditProfilePage),
-		('/edit-profile-done', EditProfileDonePage),
+		('/save-profile', SaveProfilePage),
 		('/detail-form', DetailForm),
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
