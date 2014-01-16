@@ -114,6 +114,23 @@ def weeklyize_records(summary_records):
 		weekly_summary.append(week_summary)
 	return weekly_summary
 
+def monthlyize_records(summary_records):
+	monthly_sums = {}
+	for r in summary_records:
+		current_datetime = r['date']
+		key_date = str(current_datetime.year) + '-' + str(current_datetime.month)
+		hours = r['hours']
+		
+		if key_date in monthly_sums:
+			monthly_sums[key_date] += hours
+		else:
+			monthly_sums[key_date] = hours
+
+	monthly_summary = []
+	for k in sorted(monthly_sums.iterkeys()):
+		monthly_summary.append( { 'date': k, 'hours': monthly_sums[k] } )
+	return monthly_summary
+	
 def totalize_hours(records):
 	total_hours = 0.0
 	for r in records:
@@ -133,8 +150,9 @@ def get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datet
 		complete_sorted_records = sorted(complete_records, key=lambda k: k['date'])
 		summary_records = summarize_records(complete_sorted_records, start_date, end_date)
 		weekly_summary = weeklyize_records(summary_records)
+		monthly_summary = monthlyize_records(summary_records)
 		total_hours = totalize_hours(complete_sorted_records)
-	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'weekly_summary': weekly_summary, 'total_hours': total_hours }
+	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'weekly_summary': weekly_summary, 'monthly_summary': monthly_summary, 'total_hours': total_hours }
 	return values
 			
 def yast_error(yast, template):
@@ -370,6 +388,22 @@ class HoursReportDownload(HoursReport):
 		else:
 			self.response.out.write(self.response_json(values))
 
+class SummaryForm(webapp2.RequestHandler):
+	def get(self):
+		user_dict = { }
+		response_template = jinja_environment.get_template('templates/summary-form.html.jinja')
+		self.response.out.write(response_template.render(user_dict))
+	
+class SummaryReportHtml(HoursReport):
+	def __init__(self, *args, **kwargs):
+		super(SummaryReportHtml, self).__init__(*args, **kwargs)
+		self.error_template = jinja_environment.get_template('templates/detail-error-1.html.jinja')
+		self.date_error_template = jinja_environment.get_template('templates/detail-error.html.jinja')
+
+	def write_response(self, values):
+		response_template = jinja_environment.get_template('templates/summary-report.html.jinja')
+		self.response.out.write(response_template.render(values))
+
 application = webapp2.WSGIApplication(
 	[
 		('/', MainPage),
@@ -381,7 +415,9 @@ application = webapp2.WSGIApplication(
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
 		('/timesheet-form', TimesheetForm),
-		('/timesheet-report', TimesheetReport)
+		('/timesheet-report', TimesheetReport),
+		('/summary-form', SummaryForm),
+		('/summary-report', SummaryReportHtml)
 	],
 	debug=False)
 
