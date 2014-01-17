@@ -5,6 +5,7 @@ import jinja2
 import os
 import json
 from parse_datetime import *
+import calendar
 from yastlib import *
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -114,11 +115,11 @@ def weeklyize_records(summary_records):
 		weekly_summary.append(week_summary)
 	return weekly_summary
 
-def monthlyize_records(summary_records):
+def monthlyize_records(summary_records, start_datetime, end_datetime):
 	monthly_sums = {}
 	for r in summary_records:
-		current_datetime = r['date']
-		key_date = str(current_datetime.year) + '-' + str(current_datetime.month)
+		d = r['date']
+		key_date = datetime.datetime(d.year, d.month, 1)
 		hours = r['hours']
 		
 		if key_date in monthly_sums:
@@ -128,7 +129,12 @@ def monthlyize_records(summary_records):
 
 	monthly_summary = []
 	for k in sorted(monthly_sums.iterkeys()):
-		monthly_summary.append( { 'date': k, 'hours': monthly_sums[k] } )
+		(start_dow, end_day) = calendar.monthrange(k.year, k.month)
+		ds = max( [ datetime.datetime(k.year, k.month, 1), start_datetime ] )
+		de = min( [ datetime.datetime(k.year, k.month, end_day), end_datetime ] )
+		start_date = str(ds.year) + '-' + '%02d' % ds.month + '-' + '%02d' % ds.day
+		end_date = '%02d' % de.month + '-' + '%02d' % de.day
+		monthly_summary.append( { 'date': k, 'start_date': start_date, 'end_date': end_date, 'hours': monthly_sums[k] } )
 	return monthly_summary
 	
 def totalize_hours(records):
@@ -150,7 +156,7 @@ def get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datet
 		complete_sorted_records = sorted(complete_records, key=lambda k: k['date'])
 		summary_records = summarize_records(complete_sorted_records, start_date, end_date)
 		weekly_summary = weeklyize_records(summary_records)
-		monthly_summary = monthlyize_records(summary_records)
+		monthly_summary = monthlyize_records(summary_records, start_datetime, end_datetime)
 		total_hours = totalize_hours(complete_sorted_records)
 	values = { 'status': yast_status, 'projects': projects, 'records': sorted_records, 'summary': summary_records, 'weekly_summary': weekly_summary, 'monthly_summary': monthly_summary, 'total_hours': total_hours }
 	return values
