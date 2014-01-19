@@ -3,8 +3,7 @@
   -webkit-appearance: none;
   display: block;
   margin: 5px;
-  width: 135px;
-  height: 40px;
+  height: 44px;
   padding: 10px;
   border: none;
   border-radius: 5px;
@@ -16,16 +15,33 @@
   font-weight: bold;
   text-decoration: none;
 }
-.pagemenulink {
-  -webkit-appearance: none;
+.pagemenulink1 {
   display: block;
   margin: 5px;
   width: 100px;
-  height: 20px;
+  height: 19px;
+  padding: 19px 10px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 20px;
+  background: #bbaa77;
+  color: white;
+  font: -webkit-small-control;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.pagemenulink2 {
+  display: block;
+  margin: 5px;
+  width: 100px;
+  height: 35px;
   padding: 10px;
   border: none;
   border-radius: 5px;
   text-align: center;
+  line-height: 20px;
   background: #bbaa77;
   color: white;
   font: -webkit-small-control;

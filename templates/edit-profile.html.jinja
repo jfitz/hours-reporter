@@ -11,14 +11,13 @@
 <body>
 {% include "templates/logo.html" %}
 {% include "templates/menu.html" %}
-<h1>Edit profile</h1>
-<h2>User: {{ contractor_id }}</h2>
+<p>Profile: {{ contractor_id }}</p>
 <form method="GET" action="save-profile">
 <p>Submitter name: <input type="text" name="contractor_name" value="{{ contractor_name }}"></p>
 <p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
 <p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
 <p>Yast ID: <input type="text" name="yast_id" value="{{ yast_id }}"></p>
-<p>Yast password: <input type="text" name="yast_password" value="{{ yast_password }}"></p>
+<p>Yast password: <input type="password" name="yast_password" value="{{ yast_password }}"></p>
 <p>Yast parent ID: <input type="text" name="yast_parent_project_id" value="{{ yast_parent_project_id }}"></p>
 <button type="submit" class="submitbutton" value="Save">Commit</button>
 </form>

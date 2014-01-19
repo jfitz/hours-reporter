@@ -197,6 +197,10 @@ class DisplayProfilePage(webapp2.RequestHandler):
 			approver_contact = contractor_info.approver_contact
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
+			if len(yast_password) > 0:
+				yast_password = 'xxxxxxxxx'
+			else:
+				yast_password = ''
 			yast_parent_project_id = str(contractor_info.yast_parent_project_id)
 		else:
 			contractor_name = ''
@@ -259,6 +263,10 @@ class SaveProfilePage(webapp2.RequestHandler):
 		contractor_info.yast_password = yast_password
 		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
 		contractor_info.put()
+		if len(yast_password) > 0:
+			yast_password = 'xxxxxxxxx'
+		else:
+			yast_password = ''
 		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
 		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))

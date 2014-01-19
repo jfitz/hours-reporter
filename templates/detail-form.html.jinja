@@ -17,11 +17,10 @@ $(function() {
 {% include "templates/logo.html" %}
 {% include "templates/menu.html" %}
 <h1>Task detail report</h1>
-<p>Enter dates for task details:</p>
 <form method="GET" action="details-report" target="_blank">
 <p>Starting date: <input type="text" id="popupDatepicker1" name="start_date"></p>
 <p>Ending date: <input type="text" id="popupDatepicker2" name="end_date"></p>
-<input type="submit" value="Details">
+<button type="submit" class="submitbutton" value="Details">Create report</button>
 </form>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 

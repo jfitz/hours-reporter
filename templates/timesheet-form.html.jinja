@@ -15,21 +15,15 @@ $(function() {
 </head>
 <body>
 {% include "templates/logo.html" %}
-<table summary="menu" >
-<tr>
-<td class="menu"><a href="edit-profile">Edit Profile</a></td>
-<td class="menu"><a href="detail-form">Details</a></td>
-<td class="menu"><a href="timesheet-form">Timesheet</a></td>
-<td class="menu">Monthly Summary</td>
-</tr>
-</table>
+{% include "templates/menu.html" %}
+<h1>Timesheet report</h1>
 <form method="GET" action="timesheet-report" target="_blank">
 <p>Submitter name: <input type="text" name="contractor_name" value="{{ contractor_name }}"></p>
 <p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
 <p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
 <p>Starting date: <input type="text" id="popupDatepicker1" name="start_date"></p>
 <p>Ending date: <input type="text" id="popupDatepicker2" name="end_date"></p>
-<input type="submit" value="Timesheet">
+<button type="submit" class="submitbutton" value="Timesheet">Create timesheet</button>
 </form>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
