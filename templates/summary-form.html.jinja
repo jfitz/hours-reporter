@@ -18,6 +18,8 @@ $(function() {
 {% include "templates/menu.html" %}
 <h1>Hours summary report</h1>
 <form method="GET" action="summary-report" target="_blank">
+<p>End client: <input type="text" name="end_client_name" value="{{ end_client_name }}"></p>
+<p>Billed client: <input type="text" name="billed_client_name" value="{{ billed_client_name }}"></p>
 <p>Starting date: <input type="text" id="popupDatepicker1" name="start_date"></p>
 <p>Ending date: <input type="text" id="popupDatepicker2" name="end_date"></p>
 <button type="submit" class="submitbutton" value="Summary">Create summary</button>

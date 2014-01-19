@@ -20,6 +20,8 @@ class ContractorInfo(ndb.Model):
 	contractor_name = ndb.StringProperty(indexed=False)
 	approver_name = ndb.StringProperty(indexed=False)
 	approver_contact = ndb.StringProperty(indexed=False)
+	end_client_name = ndb.StringProperty(indexed=False)
+	billed_client_name = ndb.StringProperty(indexed=False)
 	yast_id = ndb.StringProperty(indexed=False)
 	yast_password = ndb.StringProperty(indexed=False)
 	yast_parent_project_id = ndb.IntegerProperty(indexed=False)
@@ -195,6 +197,8 @@ class DisplayProfilePage(webapp2.RequestHandler):
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
 			approver_contact = contractor_info.approver_contact
+			end_client_name = contractor_info.end_client_name
+			billed_client_name = contractor_info.billed_client_name
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
 			if len(yast_password) > 0:
@@ -206,10 +210,22 @@ class DisplayProfilePage(webapp2.RequestHandler):
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
+			end_client_name = ''
+			billed_client_name = ''
 			yast_id = ''
 			yast_password = ''
 			yast_parent_project_id = '0'
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
+		user_dict = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'approver_name': approver_name,
+		 'approver_contact': approver_contact,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name,
+		 'yast_id': yast_id,
+		 'yast_password': yast_password,
+		 'yast_parent_project_id': yast_parent_project_id
+		 }
 		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
  	
@@ -224,6 +240,8 @@ class EditProfilePage(webapp2.RequestHandler):
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
 			approver_contact = contractor_info.approver_contact
+			end_client_name = contractor_info.end_client_name
+			billed_client_name = contractor_info.billed_client_name
 			yast_id = contractor_info.yast_id
 			yast_password = contractor_info.yast_password
 			yast_parent_project_id = str(contractor_info.yast_parent_project_id)
@@ -231,10 +249,22 @@ class EditProfilePage(webapp2.RequestHandler):
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
+			end_client_name = ''
+			billed_client_name = ''
 			yast_id = ''
 			yast_password = ''
 			yast_parent_project_id = '0'
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
+		user_dict = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'approver_name': approver_name,
+		 'approver_contact': approver_contact,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name,
+		 'yast_id': yast_id,
+		 'yast_password': yast_password,
+		 'yast_parent_project_id': yast_parent_project_id
+		 }
 		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
@@ -244,6 +274,8 @@ class SaveProfilePage(webapp2.RequestHandler):
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact')
+		end_client_name = self.request.get('end_client_name')
+		billed_client_name = self.request.get('billed_client_name')
 		yast_id = self.request.get('yast_id')
 		yast_password = self.request.get('yast_password')
 		yast_parent_project_id = self.request.get('yast_parent_project_id')
@@ -259,6 +291,8 @@ class SaveProfilePage(webapp2.RequestHandler):
 		contractor_info.contractor_name = contractor_name
 		contractor_info.approver_name = approver_name
 		contractor_info.approver_contact = approver_contact
+		contractor_info.end_client_name = end_client_name
+		contractor_info.billed_client_name = billed_client_name
 		contractor_info.yast_id = yast_id
 		contractor_info.yast_password = yast_password
 		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
@@ -267,7 +301,17 @@ class SaveProfilePage(webapp2.RequestHandler):
 			yast_password = 'xxxxxxxxx'
 		else:
 			yast_password = ''
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'yast_id': yast_id, 'yast_password': yast_password, 'yast_parent_project_id': yast_parent_project_id }
+		user_dict = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'approver_name': approver_name,
+		 'approver_contact': approver_contact,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name,
+		 'yast_id': yast_id,
+		 'yast_password': yast_password,
+		 'yast_parent_project_id': yast_parent_project_id
+		 }
 		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 
@@ -294,6 +338,8 @@ class HoursReport(webapp2.RequestHandler):
 		contractor_name = self.request.get('contractor_name')
 		approver_name = self.request.get('approver_name')
 		approver_contact = self.request.get('approver_contact')
+		end_client_name = self.request.get('end_client_name')
+		billed_client_name = self.request.get('billed_client_name')
 
 		try:
 			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
@@ -323,7 +369,16 @@ class HoursReport(webapp2.RequestHandler):
 			yast_password = ''
 			yast_parent_project_id = 0 
 
-		user_dict = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact, 'start': start_date, 'end': end_date }
+		user_dict = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'approver_name': approver_name,
+		 'approver_contact': approver_contact,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name,
+		 'start': start_date,
+		 'end': end_date
+		 }
 
 		# connect to yast.com and retrieve data
 		yast = Yast()
@@ -345,11 +400,22 @@ class TimesheetForm(webapp2.RequestHandler):
 			contractor_name = contractor_info.contractor_name
 			approver_name = contractor_info.approver_name
 			approver_contact = contractor_info.approver_contact
+			end_client_name = contractor_info.end_client_name
+			billed_client_name = contractor_info.billed_client_name
 		else:
 			contractor_name = ''
 			approver_name = ''
 			approver_contact = ''
-		template_values = { 'contractor_id': contractor_id, 'contractor_name': contractor_name, 'approver_name': approver_name, 'approver_contact': approver_contact }
+			end_client_name = ''
+			billed_client_name = ''
+		template_values = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'approver_name': approver_name,
+		 'approver_contact': approver_contact,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name
+		 }
 		template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
 		self.response.out.write(template.render(template_values))
 	
@@ -404,9 +470,26 @@ class HoursReportDownload(HoursReport):
 
 class SummaryForm(webapp2.RequestHandler):
 	def get(self):
-		user_dict = { }
+		contractor_id = self.request.cookies.get('contractor_id')
+		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+		contractor_infos = contractor_info_query.fetch(1)
+		if len(contractor_infos) > 0:
+			contractor_info = contractor_infos[0]
+			contractor_name = contractor_info.contractor_name
+			end_client_name = contractor_info.end_client_name
+			billed_client_name = contractor_info.billed_client_name
+		else:
+			contractor_name = ''
+			end_client_name = ''
+			billed_client_name = ''
+		template_values = {
+		 'contractor_id': contractor_id,
+		 'contractor_name': contractor_name,
+		 'end_client_name': end_client_name,
+		 'billed_client_name': billed_client_name
+		 }
 		response_template = jinja_environment.get_template('templates/summary-form.html.jinja')
-		self.response.out.write(response_template.render(user_dict))
+		self.response.out.write(response_template.render(template_values))
 	
 class SummaryReportHtml(HoursReport):
 	def __init__(self, *args, **kwargs):
