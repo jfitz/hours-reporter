@@ -330,7 +330,12 @@ class HoursReport(webapp2.RequestHandler):
 		records = values['records']
 		t_list = []
 		for k, r in records:
-			t_dict = { 'project': projects[r.project].name, 'date': r.variables['startDate'], 'hours': r.variables['taskHours'], 'comment': r.variables['comment'] }
+			t_dict = {
+			 'project': projects[r.project].name,
+			 'date': str(r.variables['startDate']),
+			 'hours': r.variables['taskHours'],
+			 'comment': r.variables['comment']
+			 }
 			t_list.append(t_dict)
 		return json.dumps( t_list )
 	
