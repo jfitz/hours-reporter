@@ -3,15 +3,15 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 {% include "templates/title.html" %}
-{% include "templates/css.html" %}
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-  <script type="text/javascript" src="js/jquery.datepick.js"></script>
 </head>
 <body>
+{% if user_id == '' %}
+{% include "templates/logged_out_header.html" %}
+{% else %}
 {% include "templates/logged_in_header.html" %}
-{% include "templates/menu.html" %}
+{% endif %}
+<p>Page not found</p>
 <p></p>
-<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
-alt="Powered by Google App Engine" />
 </body>
 </html>

@@ -7,13 +7,42 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 </head>
 <body>
-{% include "templates/logo.html" %}
+{% include "templates/logged_out_header.html" %}
+{% if message != '' %}
+<p>{{ message }}</p>
+{% endif %}
+<table summary="login options" >
+<tbody>
+<tr>
+<td style="padding-left: 50px; padding-right: 50px;">
 <form method="GET" action="select">
-<p>Contractor ID (or e-mail): <input type="text" name="contractor_id"></p>
-<p>Password: <input type="password" name="falabala"></p>
-<button type="submit" class="submitbutton" value="Login">Login</button>
+<table summary="login form" >
+<tbody>
+<tr><td><span class="header">Returning users</span></td></tr>
+<tr><td>User ID:</td><td><input type="text" name="user_id"></td></tr>
+<tr><td>Password:</td><td><input type="password" name="falabala"></td></tr>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Login">Login</button></td></tr>
+</tbody>
+</table>
 </form>
-<p></p>
+</td>
+<td style="padding-left: 50px; padding-right: 50px;">
+<form method="GET" action="register">
+<table summary="registration form" >
+<tbody>
+<tr><td><span class="header">New users</span></td></tr>
+<tr><td>User ID:</td><td><input type="text" name="user_id"></td></tr>
+<tr><td>Password:</td><td><input type="password" name="fala"></td></tr>
+<tr><td>Confirm password:</td><td><input type="password" name="bala"></td></tr>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Register">Register</button></td></tr>
+</tbody>
+</table>
+</form>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="Powered by Google App Engine" />
 </body>
