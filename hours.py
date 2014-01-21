@@ -252,12 +252,10 @@ class SelectPage(webapp2.RequestHandler):
 class DisplayUserProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		print '*** user id: ' + user_id
 		if len(user_id) > 0:
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(10)
 			if len(user_infos) > 0:
-				print '*** found user info'
 				user_info = user_infos[0]
 				user_name = user_info.name
 				user_password = user_info.password
@@ -266,7 +264,6 @@ class DisplayUserProfilePage(webapp2.RequestHandler):
 				else:
 					user_password = ''
 			else:
-				print '*** no user infos'
 				user_name = ''
 				user_password = ''
 			template_values = {
@@ -287,7 +284,6 @@ class EditUserProfilePage(webapp2.RequestHandler):
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(10)
 			if len(user_infos) > 0:
-				print '*** found user info'
 				user_info = user_infos[0]
 				user_name = user_info.name
 				user_password = user_info.password
@@ -296,7 +292,6 @@ class EditUserProfilePage(webapp2.RequestHandler):
 				else:
 					user_password = ''
 			else:
-				print '*** no user infos'
 				user_name = ''
 				user_password = ''
 			template_values = {
@@ -320,16 +315,13 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(1)
 			if len(user_infos) > 0:
-				print '*** found user info'
 				# update the existing item
 				user_info = user_infos[0]
 			else:
-				print '*** no user infos'
 				# create an item
 				user_info = UserInfo(parent=user_info_key(user_id))
 			user_info.name = user_name
 			user_info.password = user_password
-			print '*** put user info: ' + user_id + ' ' + user_name + ' ' + user_password
 			user_info.put()
 			if len(user_password) > 0:
 				user_password = 'xxxxxxxxx'
