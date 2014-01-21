@@ -39,7 +39,6 @@ def contractor_info_key(contractor_id=DEFAULT_CONTRACTOR_ID):
 	return ndb.Key('ContractorList', contractor_id)
 
 class ContractorInfo(ndb.Model):
-	contractor_name = ndb.StringProperty(indexed=False)
 	approver_name = ndb.StringProperty(indexed=False)
 	approver_contact = ndb.StringProperty(indexed=False)
 	end_client_name = ndb.StringProperty(indexed=False)
@@ -253,10 +252,12 @@ class SelectPage(webapp2.RequestHandler):
 class DisplayUserProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
+		print '*** user id: ' + user_id
 		if len(user_id) > 0:
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(10)
 			if len(user_infos) > 0:
+				print '*** found user info'
 				user_info = user_infos[0]
 				user_name = user_info.name
 				user_password = user_info.password
@@ -265,6 +266,7 @@ class DisplayUserProfilePage(webapp2.RequestHandler):
 				else:
 					user_password = ''
 			else:
+				print '*** no user infos'
 				user_name = ''
 				user_password = ''
 			template_values = {
@@ -285,6 +287,7 @@ class EditUserProfilePage(webapp2.RequestHandler):
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(10)
 			if len(user_infos) > 0:
+				print '*** found user info'
 				user_info = user_infos[0]
 				user_name = user_info.name
 				user_password = user_info.password
@@ -293,6 +296,7 @@ class EditUserProfilePage(webapp2.RequestHandler):
 				else:
 					user_password = ''
 			else:
+				print '*** no user infos'
 				user_name = ''
 				user_password = ''
 			template_values = {
@@ -316,13 +320,16 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
 			user_infos = user_info_query.fetch(1)
 			if len(user_infos) > 0:
+				print '*** found user info'
 				# update the existing item
 				user_info = user_infos[0]
 			else:
+				print '*** no user infos'
 				# create an item
-				user_info = UserInfo(parent=contractor_info_key(user_id))
+				user_info = UserInfo(parent=user_info_key(user_id))
 			user_info.name = user_name
 			user_info.password = user_password
+			print '*** put user info: ' + user_id + ' ' + user_name + ' ' + user_password
 			user_info.put()
 			if len(user_password) > 0:
 				user_password = 'xxxxxxxxx'
@@ -348,7 +355,6 @@ class DisplayYastProfilePage(webapp2.RequestHandler):
 			contractor_infos = contractor_info_query.fetch(10)
 			if len(contractor_infos) > 0:
 				contractor_info = contractor_infos[0]
-				contractor_name = contractor_info.contractor_name
 				approver_name = contractor_info.approver_name
 				approver_contact = contractor_info.approver_contact
 				end_client_name = contractor_info.end_client_name
@@ -361,7 +367,6 @@ class DisplayYastProfilePage(webapp2.RequestHandler):
 					yast_password = ''
 				yast_parent_project_id = str(contractor_info.yast_parent_project_id)
 			else:
-				contractor_name = ''
 				approver_name = ''
 				approver_contact = ''
 				end_client_name = ''
@@ -372,7 +377,6 @@ class DisplayYastProfilePage(webapp2.RequestHandler):
 			template_values = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -396,7 +400,6 @@ class EditYastProfilePage(webapp2.RequestHandler):
 			contractor_infos = contractor_info_query.fetch(10)
 			if len(contractor_infos) > 0:
 				contractor_info = contractor_infos[0]
-				contractor_name = contractor_info.contractor_name
 				approver_name = contractor_info.approver_name
 				approver_contact = contractor_info.approver_contact
 				end_client_name = contractor_info.end_client_name
@@ -405,7 +408,6 @@ class EditYastProfilePage(webapp2.RequestHandler):
 				yast_password = contractor_info.yast_password
 				yast_parent_project_id = str(contractor_info.yast_parent_project_id)
 			else:
-				contractor_name = ''
 				approver_name = ''
 				approver_contact = ''
 				end_client_name = ''
@@ -416,7 +418,6 @@ class EditYastProfilePage(webapp2.RequestHandler):
 			template_values = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -436,7 +437,6 @@ class SaveYastProfilePage(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			contractor_id = user_id
-			contractor_name = self.request.get('contractor_name')
 			approver_name = self.request.get('approver_name')
 			approver_contact = self.request.get('approver_contact')
 			end_client_name = self.request.get('end_client_name')
@@ -453,7 +453,6 @@ class SaveYastProfilePage(webapp2.RequestHandler):
 			else:
 				# create an item
 				contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
-			contractor_info.contractor_name = contractor_name
 			contractor_info.approver_name = approver_name
 			contractor_info.approver_contact = approver_contact
 			contractor_info.end_client_name = end_client_name
@@ -469,7 +468,6 @@ class SaveYastProfilePage(webapp2.RequestHandler):
 			template_values = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -518,7 +516,13 @@ class HoursReport(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
-			contractor_name = self.request.get('contractor_name')
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(10)
+			if len(user_infos) > 0:
+				user_info = user_infos[0]
+				user_name = user_info.name
+			else:
+				user_name = ''
 			approver_name = self.request.get('approver_name')
 			approver_contact = self.request.get('approver_contact')
 			end_client_name = self.request.get('end_client_name')
@@ -556,7 +560,7 @@ class HoursReport(webapp2.RequestHandler):
 			user_dict = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
+			 'user_name': user_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -583,18 +587,23 @@ class TimesheetForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(10)
+			if len(user_infos) > 0:
+				user_info = user_infos[0]
+				user_name = user_info.name
+			else:
+				user_name = ''
 			contractor_id = user_id
 			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 			contractor_infos = contractor_info_query.fetch(1)
 			if len(contractor_infos) > 0:
 				contractor_info = contractor_infos[0]
-				contractor_name = contractor_info.contractor_name
 				approver_name = contractor_info.approver_name
 				approver_contact = contractor_info.approver_contact
 				end_client_name = contractor_info.end_client_name
 				billed_client_name = contractor_info.billed_client_name
 			else:
-				contractor_name = ''
 				approver_name = ''
 				approver_contact = ''
 				end_client_name = ''
@@ -602,7 +611,7 @@ class TimesheetForm(webapp2.RequestHandler):
 			template_values = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
+			 'user_name': user_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -667,22 +676,27 @@ class SummaryForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(10)
+			if len(user_infos) > 0:
+				user_info = user_infos[0]
+				user_name = user_info.name
+			else:
+				user_name = ''
 			contractor_id = user_id
 			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 			contractor_infos = contractor_info_query.fetch(1)
 			if len(contractor_infos) > 0:
 				contractor_info = contractor_infos[0]
-				contractor_name = contractor_info.contractor_name
 				end_client_name = contractor_info.end_client_name
 				billed_client_name = contractor_info.billed_client_name
 			else:
-				contractor_name = ''
 				end_client_name = ''
 				billed_client_name = ''
 			template_values = {
 			 'user_id': user_id,
 			 'contractor_id': contractor_id,
-			 'contractor_name': contractor_name,
+			 'user_name': user_name,
 			 'end_client_name': end_client_name,
 			 'billed_client_name': billed_client_name
 			 }
