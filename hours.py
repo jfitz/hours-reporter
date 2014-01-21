@@ -216,7 +216,7 @@ class LogoutPage(webapp2.RequestHandler):
 		self.response.set_cookie('user_id', '')
 		self.response.out.write(template.render(template_values))
 
-class SelectPage(webapp2.RequestHandler):
+class LoginPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
 		password = self.request.get('falabala')
@@ -237,15 +237,116 @@ class SelectPage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class DisplayProfilePage(webapp2.RequestHandler):
+class SelectPage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			template_values = {
+			 'user_id': user_id
+			 }
+			template = jinja_environment.get_template('templates/select.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
+class DisplayUserProfilePage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(10)
+			if len(user_infos) > 0:
+				user_info = user_infos[0]
+				user_name = user_info.name
+				user_password = user_info.password
+				if len(user_password) > 0:
+					user_password = 'xxxxxxxxx'
+				else:
+					user_password = ''
+			else:
+				user_name = ''
+				user_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'user_name': user_name,
+			 'user_password': user_password
+			 }
+			template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+ 	
+class EditUserProfilePage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(10)
+			if len(user_infos) > 0:
+				user_info = user_infos[0]
+				user_name = user_info.name
+				user_password = user_info.password
+				if len(user_password) > 0:
+					user_password = 'xxxxxxxxx'
+				else:
+					user_password = ''
+			else:
+				user_name = ''
+				user_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'user_name': user_name,
+			 'user_password': user_password
+			 }
+			template = jinja_environment.get_template('templates/edit-user-profile.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
+class SaveUserProfilePage(webapp2.RequestHandler):
  def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			user_name = self.request.get('user_name')
+			user_password = self.request.get('user_password')
+			# get the existing item from the datastore
+			user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
+			user_infos = user_info_query.fetch(1)
+			if len(user_infos) > 0:
+				# update the existing item
+				user_info = user_infos[0]
+			else:
+				# create an item
+				user_info = UserInfo(parent=contractor_info_key(user_id))
+			user_info.name = user_name
+			user_info.password = user_password
+			user_info.put()
+			if len(user_password) > 0:
+				user_password = 'xxxxxxxxx'
+			else:
+				user_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'user_name': user_name,
+			 'user_password': user_password
+			 }
+			template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
+class DisplayYastProfilePage(webapp2.RequestHandler):
+	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			contractor_id = user_id
 			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
 			contractor_infos = contractor_info_query.fetch(10)
 			if len(contractor_infos) > 0:
-				print 'number of profiles: ' + str(len(contractor_infos))
 				contractor_info = contractor_infos[0]
 				contractor_name = contractor_info.contractor_name
 				approver_name = contractor_info.approver_name
@@ -280,109 +381,120 @@ class DisplayProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/display-profile.html.jinja')
+			template = jinja_environment.get_template('templates/display-yast-profile.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
  	
-class EditProfilePage(webapp2.RequestHandler):
+class EditYastProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		contractor_id = user_id
-		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(10)
-		if len(contractor_infos) > 0:
-			print 'number of profiles: ' + str(len(contractor_infos))
-			contractor_info = contractor_infos[0]
-			contractor_name = contractor_info.contractor_name
-			approver_name = contractor_info.approver_name
-			approver_contact = contractor_info.approver_contact
-			end_client_name = contractor_info.end_client_name
-			billed_client_name = contractor_info.billed_client_name
-			yast_id = contractor_info.yast_id
-			yast_password = contractor_info.yast_password
-			yast_parent_project_id = str(contractor_info.yast_parent_project_id)
+		if len(user_id) > 0:
+			contractor_id = user_id
+			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+			contractor_infos = contractor_info_query.fetch(10)
+			if len(contractor_infos) > 0:
+				contractor_info = contractor_infos[0]
+				contractor_name = contractor_info.contractor_name
+				approver_name = contractor_info.approver_name
+				approver_contact = contractor_info.approver_contact
+				end_client_name = contractor_info.end_client_name
+				billed_client_name = contractor_info.billed_client_name
+				yast_id = contractor_info.yast_id
+				yast_password = contractor_info.yast_password
+				yast_parent_project_id = str(contractor_info.yast_parent_project_id)
+			else:
+				contractor_name = ''
+				approver_name = ''
+				approver_contact = ''
+				end_client_name = ''
+				billed_client_name = ''
+				yast_id = ''
+				yast_password = ''
+				yast_parent_project_id = '0'
+			template_values = {
+			 'user_id': user_id,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
+			 'approver_name': approver_name,
+			 'approver_contact': approver_contact,
+			 'end_client_name': end_client_name,
+			 'billed_client_name': billed_client_name,
+			 'yast_id': yast_id,
+			 'yast_password': yast_password,
+			 'yast_parent_project_id': yast_parent_project_id
+			 }
+			template = jinja_environment.get_template('templates/edit-yast-profile.html.jinja')
 		else:
-			contractor_name = ''
-			approver_name = ''
-			approver_contact = ''
-			end_client_name = ''
-			billed_client_name = ''
-			yast_id = ''
-			yast_password = ''
-			yast_parent_project_id = '0'
-		user_dict = {
-		 'user_id': user_id,
-		 'contractor_id': contractor_id,
-		 'contractor_name': contractor_name,
-		 'approver_name': approver_name,
-		 'approver_contact': approver_contact,
-		 'end_client_name': end_client_name,
-		 'billed_client_name': billed_client_name,
-		 'yast_id': yast_id,
-		 'yast_password': yast_password,
-		 'yast_parent_project_id': yast_parent_project_id
-		 }
-		response_template = jinja_environment.get_template('templates/edit-profile.html.jinja')
-		self.response.out.write(response_template.render(user_dict))
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
 
-class SaveProfilePage(webapp2.RequestHandler):
- def get(self):
+class SaveYastProfilePage(webapp2.RequestHandler):
+	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		contractor_id = user_id
-		contractor_name = self.request.get('contractor_name')
-		approver_name = self.request.get('approver_name')
-		approver_contact = self.request.get('approver_contact')
-		end_client_name = self.request.get('end_client_name')
-		billed_client_name = self.request.get('billed_client_name')
-		yast_id = self.request.get('yast_id')
-		yast_password = self.request.get('yast_password')
-		yast_parent_project_id = self.request.get('yast_parent_project_id')
-		# get the existing item from the datastore
-		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(1)
-		if len(contractor_infos) > 0:
-			# update the existing item
-			contractor_info = contractor_infos[0]
+		if len(user_id) > 0:
+			contractor_id = user_id
+			contractor_name = self.request.get('contractor_name')
+			approver_name = self.request.get('approver_name')
+			approver_contact = self.request.get('approver_contact')
+			end_client_name = self.request.get('end_client_name')
+			billed_client_name = self.request.get('billed_client_name')
+			yast_id = self.request.get('yast_id')
+			yast_password = self.request.get('yast_password')
+			yast_parent_project_id = self.request.get('yast_parent_project_id')
+			# get the existing item from the datastore
+			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+			contractor_infos = contractor_info_query.fetch(1)
+			if len(contractor_infos) > 0:
+				# update the existing item
+				contractor_info = contractor_infos[0]
+			else:
+				# create an item
+				contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
+			contractor_info.contractor_name = contractor_name
+			contractor_info.approver_name = approver_name
+			contractor_info.approver_contact = approver_contact
+			contractor_info.end_client_name = end_client_name
+			contractor_info.billed_client_name = billed_client_name
+			contractor_info.yast_id = yast_id
+			contractor_info.yast_password = yast_password
+			contractor_info.yast_parent_project_id = int(yast_parent_project_id)
+			contractor_info.put()
+			if len(yast_password) > 0:
+				yast_password = 'xxxxxxxxx'
+			else:
+				yast_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
+			 'approver_name': approver_name,
+			 'approver_contact': approver_contact,
+			 'end_client_name': end_client_name,
+			 'billed_client_name': billed_client_name,
+			 'yast_id': yast_id,
+			 'yast_password': yast_password,
+			 'yast_parent_project_id': yast_parent_project_id
+			 }
+			template = jinja_environment.get_template('templates/display-yast-profile.html.jinja')
 		else:
-			# create an item
-			contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
-		contractor_info.contractor_name = contractor_name
-		contractor_info.approver_name = approver_name
-		contractor_info.approver_contact = approver_contact
-		contractor_info.end_client_name = end_client_name
-		contractor_info.billed_client_name = billed_client_name
-		contractor_info.yast_id = yast_id
-		contractor_info.yast_password = yast_password
-		contractor_info.yast_parent_project_id = int(yast_parent_project_id)
-		contractor_info.put()
-		if len(yast_password) > 0:
-			yast_password = 'xxxxxxxxx'
-		else:
-			yast_password = ''
-		user_dict = {
-		 'user_id': user_id,
-		 'contractor_id': contractor_id,
-		 'contractor_name': contractor_name,
-		 'approver_name': approver_name,
-		 'approver_contact': approver_contact,
-		 'end_client_name': end_client_name,
-		 'billed_client_name': billed_client_name,
-		 'yast_id': yast_id,
-		 'yast_password': yast_password,
-		 'yast_parent_project_id': yast_parent_project_id
-		 }
-		response_template = jinja_environment.get_template('templates/display-profile.html.jinja')
-		self.response.out.write(response_template.render(user_dict))
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
 
 class DetailForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		user_dict = { 
-		 'user_id': user_id,
-		 }
-		response_template = jinja_environment.get_template('templates/detail-form.html.jinja')
+		if len(user_id) > 0:
+			template_values = { 
+			 'user_id': user_id,
+			 }
+			template = jinja_environment.get_template('templates/detail-form.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(response_template.render(user_dict))
 	
 class HoursReport(webapp2.RequestHandler):
@@ -404,92 +516,102 @@ class HoursReport(webapp2.RequestHandler):
 		return json.dumps( t_list )
 	
 	def get(self):
-		contractor_name = self.request.get('contractor_name')
-		approver_name = self.request.get('approver_name')
-		approver_contact = self.request.get('approver_contact')
-		end_client_name = self.request.get('end_client_name')
-		billed_client_name = self.request.get('billed_client_name')
-
-		try:
-			start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
-			end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%m/%d/%Y")
-		except ValueError:
-			try:
-				start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%Y-%m-%d")
-				end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%Y-%m-%d")
-			except ValueError:
-				template_values = { }
-				self.response.out.write(self.date_error_template.render(template_values))
-				return
-
-		start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
-		end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
-
 		user_id = self.request.cookies.get('user_id')
-		contractor_id = user_id
-		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(1)
-		if len(contractor_infos) > 0:
-			contractor_info = contractor_infos[0]
-			yast_id = contractor_info.yast_id
-			yast_password = contractor_info.yast_password
-			yast_parent_project_id = contractor_info.yast_parent_project_id
-		else:
-			yast_id = ''
-			yast_password = ''
-			yast_parent_project_id = 0 
+		if len(user_id) > 0:
+			contractor_name = self.request.get('contractor_name')
+			approver_name = self.request.get('approver_name')
+			approver_contact = self.request.get('approver_contact')
+			end_client_name = self.request.get('end_client_name')
+			billed_client_name = self.request.get('billed_client_name')
 
-		user_dict = {
-		 'user_id': user_id,
-		 'contractor_id': contractor_id,
-		 'contractor_name': contractor_name,
-		 'approver_name': approver_name,
-		 'approver_contact': approver_contact,
-		 'end_client_name': end_client_name,
-		 'billed_client_name': billed_client_name,
-		 'start': start_date,
-		 'end': end_date
-		 }
+			try:
+				start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
+				end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%m/%d/%Y")
+			except ValueError:
+				try:
+					start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%Y-%m-%d")
+					end_datetime = datetime.datetime.strptime(self.request.get('end_date'), "%Y-%m-%d")
+				except ValueError:
+					template_values = { }
+					self.response.out.write(self.date_error_template.render(template_values))
+					return
 
-		# connect to yast.com and retrieve data
-		yast = Yast()
-		hash = yast.login(yast_id, yast_password)
-		if hash != False:
-			yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, yast_parent_project_id)
-			values = dict(user_dict.items() + yast_dict.items())
-			self.write_response(values)
+			start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
+			end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
+
+			user_id = self.request.cookies.get('user_id')
+			contractor_id = user_id
+			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+			contractor_infos = contractor_info_query.fetch(1)
+			if len(contractor_infos) > 0:
+				contractor_info = contractor_infos[0]
+				yast_id = contractor_info.yast_id
+				yast_password = contractor_info.yast_password
+				yast_parent_project_id = contractor_info.yast_parent_project_id
+			else:
+				yast_id = ''
+				yast_password = ''
+				yast_parent_project_id = 0 
+
+			user_dict = {
+			 'user_id': user_id,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
+			 'approver_name': approver_name,
+			 'approver_contact': approver_contact,
+			 'end_client_name': end_client_name,
+			 'billed_client_name': billed_client_name,
+			 'start': start_date,
+			 'end': end_date
+			 }
+
+			# connect to yast.com and retrieve data
+			yast = Yast()
+			hash = yast.login(yast_id, yast_password)
+			if hash != False:
+				yast_dict = get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, yast_parent_project_id)
+				values = dict(user_dict.items() + yast_dict.items())
+				self.write_response(values)
+			else:
+				self.response.out.write(yast_error(yast, self.error_template))
 		else:
-			self.response.out.write(yast_error(yast, self.error_template))
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+			self.response.out.write(response_template.render(user_dict))
 
 class TimesheetForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		contractor_id = user_id
-		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(1)
-		if len(contractor_infos) > 0:
-			contractor_info = contractor_infos[0]
-			contractor_name = contractor_info.contractor_name
-			approver_name = contractor_info.approver_name
-			approver_contact = contractor_info.approver_contact
-			end_client_name = contractor_info.end_client_name
-			billed_client_name = contractor_info.billed_client_name
+		if len(user_id) > 0:
+			contractor_id = user_id
+			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+			contractor_infos = contractor_info_query.fetch(1)
+			if len(contractor_infos) > 0:
+				contractor_info = contractor_infos[0]
+				contractor_name = contractor_info.contractor_name
+				approver_name = contractor_info.approver_name
+				approver_contact = contractor_info.approver_contact
+				end_client_name = contractor_info.end_client_name
+				billed_client_name = contractor_info.billed_client_name
+			else:
+				contractor_name = ''
+				approver_name = ''
+				approver_contact = ''
+				end_client_name = ''
+				billed_client_name = ''
+			template_values = {
+			 'user_id': user_id,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
+			 'approver_name': approver_name,
+			 'approver_contact': approver_contact,
+			 'end_client_name': end_client_name,
+			 'billed_client_name': billed_client_name
+			 }
+			template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
 		else:
-			contractor_name = ''
-			approver_name = ''
-			approver_contact = ''
-			end_client_name = ''
-			billed_client_name = ''
-		template_values = {
-		 'user_id': user_id,
-		 'contractor_id': contractor_id,
-		 'contractor_name': contractor_name,
-		 'approver_name': approver_name,
-		 'approver_contact': approver_contact,
-		 'end_client_name': end_client_name,
-		 'billed_client_name': billed_client_name
-		 }
-		template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 	
 class TimesheetReport(HoursReport):
@@ -544,26 +666,30 @@ class HoursReportDownload(HoursReport):
 class SummaryForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
-		contractor_id = user_id
-		contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-		contractor_infos = contractor_info_query.fetch(1)
-		if len(contractor_infos) > 0:
-			contractor_info = contractor_infos[0]
-			contractor_name = contractor_info.contractor_name
-			end_client_name = contractor_info.end_client_name
-			billed_client_name = contractor_info.billed_client_name
+		if len(user_id) > 0:
+			contractor_id = user_id
+			contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
+			contractor_infos = contractor_info_query.fetch(1)
+			if len(contractor_infos) > 0:
+				contractor_info = contractor_infos[0]
+				contractor_name = contractor_info.contractor_name
+				end_client_name = contractor_info.end_client_name
+				billed_client_name = contractor_info.billed_client_name
+			else:
+				contractor_name = ''
+				end_client_name = ''
+				billed_client_name = ''
+			template_values = {
+			 'user_id': user_id,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
+			 'end_client_name': end_client_name,
+			 'billed_client_name': billed_client_name
+			 }
+			template = jinja_environment.get_template('templates/summary-form.html.jinja')
 		else:
-			contractor_name = ''
-			end_client_name = ''
-			billed_client_name = ''
-		template_values = {
-		 'user_id': user_id,
-		 'contractor_id': contractor_id,
-		 'contractor_name': contractor_name,
-		 'end_client_name': end_client_name,
-		 'billed_client_name': billed_client_name
-		 }
-		template = jinja_environment.get_template('templates/summary-form.html.jinja')
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 	
 class SummaryReportHtml(HoursReport):
@@ -576,7 +702,7 @@ class SummaryReportHtml(HoursReport):
 		response_template = jinja_environment.get_template('templates/summary-report.html.jinja')
 		self.response.out.write(response_template.render(values))
 
-class NotFoundPageHandler(webapp2.RequestHandler):
+class NotFoundPage(webapp2.RequestHandler):
 	def get(self):
 		self.error(404)
 		template_values = { }
@@ -587,10 +713,14 @@ application = webapp2.WSGIApplication(
 	[
 		('/', LoginRegisterPage),
 		('/logout', LogoutPage),
+		('/login', LoginPage),
 		('/select', SelectPage),
-		('/display-profile', DisplayProfilePage),
-		('/edit-profile', EditProfilePage),
-		('/save-profile', SaveProfilePage),
+		('/display-user-profile', DisplayUserProfilePage),
+		('/edit-user-profile', EditUserProfilePage),
+		('/save-user-profile', SaveUserProfilePage),
+		('/display-yast-profile', DisplayYastProfilePage),
+		('/edit-yast-profile', EditYastProfilePage),
+		('/save-yast-profile', SaveYastProfilePage),
 		('/detail-form', DetailForm),
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
@@ -598,7 +728,7 @@ application = webapp2.WSGIApplication(
 		('/timesheet-report', TimesheetReport),
 		('/summary-form', SummaryForm),
 		('/summary-report', SummaryReportHtml),
-		('/.*', NotFoundPageHandler)
+		('/.*', NotFoundPage)
 	],
 	debug=False)
 

@@ -12,7 +12,7 @@
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
 <p>Profile: {{ contractor_id }}</p>
-<form method="GET" action="save-profile">
+<form method="GET" action="save-yast-profile">
 <p>Submitter name: <input type="text" name="contractor_name" value="{{ contractor_name }}"></p>
 <p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
 <p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
@@ -25,7 +25,7 @@
 </form>
 <form method="GET" action="select">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
-<button type="submit" class="submitbutton" value="Save">Cancel</button>
+<button type="submit" class="submitbutton" value="Cancel">Cancel</button>
 </form>
 <p></p>
 <p><img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 

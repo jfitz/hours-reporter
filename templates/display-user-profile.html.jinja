@@ -9,18 +9,12 @@
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
-<p>Profile: {{ contractor_id }}</p>
-<p>Submitter name: {{ contractor_name }}</p>
-<p>Approver name: {{ approver_name }}</p>
-<p>Approver contact: {{ approver_contact }}</p>
-<p>End client: {{ end_client_name }}</p>
-<p>Billed client: {{ billed_client_name }}</p>
-<p>Yast ID: {{ yast_id }}</p>
-<p>Yast Password: {{ yast_password }}</p>
-<p>Yast parent id: {{ yast_parent_project_id }}</p>
+<p>Profile: {{ user_id }}</p>
+<p>Name: {{ user_name }}</p>
+<p>Password: {{ user_password }}</p>
 <p></p>
-<form method="GET" action="edit-profile">
-<input type="hidden" name="contractor_id" value="{{ contractor_id }}">
+<form method="GET" action="edit-user-profile">
+<input type="hidden" name="user_id" value="{{ user_id }}">
 <button type="submit" class="submitbutton" value="Edit">Edit</button>
 </form>
 <p></p>

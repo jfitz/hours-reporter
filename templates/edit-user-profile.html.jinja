@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+{% include "templates/title.html" %}
+{% include "templates/css.html" %}
+  <style type="text/css">
+  </style>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+</head>
+<body>
+{% include "templates/logged_in_header.html" %}
+{% include "templates/menu.html" %}
+<p>Profile: {{ user_id }}</p>
+<form method="GET" action="save-user-profile">
+<p>Name: <input type="text" name="user_name" value="{{ user_name }}"></p>
+<p>Password: <input type="password" name="user_password" value="{{ user_password }}"></p>
+<button type="submit" class="submitbutton" value="Save">Commit</button>
+</form>
+<form method="GET" action="select">
+<input type="hidden" name="user_id" value="{{ user_id }}">
+<button type="submit" class="submitbutton" value="Cancel">Cancel</button>
+</form>
+<p></p>
+<p><img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
+alt="Powered by Google App Engine" /></p>
+</body>
+</html>
