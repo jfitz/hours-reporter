@@ -357,25 +357,32 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			user_name = self.request.get('user_name')
-			user_password = self.request.get('user_password')
-			billing_profile = self.request.get('billing_profile')
-			user_info = get_user_info(user_id)
-			if user_info == False:
-				user_info = UserInfo(parent=user_info_key(user_id))
-			user_info.name = user_name
-			user_info.password = user_password
-			user_info.billing_profile = billing_profile
-			user_info.put()
-			if len(user_password) > 0:
-				user_password = 'xxxxxxxxx'
+			user_password1 = self.request.get('user_password1')
+			user_password2 = self.request.get('user_password2')
+			if user_password2 == user_password1:
+				billing_profile = self.request.get('billing_profile')
+				user_info = get_user_info(user_id)
+				if user_info == False:
+					user_info = UserInfo(parent=user_info_key(user_id))
+				user_info.name = user_name
+				user_info.password = user_password1
+				user_info.billing_profile = billing_profile
+				user_info.put()
+				if len(user_password1) > 0:
+					user_password = 'xxxxxxxxx'
+				else:
+					user_password = ''
+				template_values = {
+				 'user_id': user_id,
+				 'user_name': user_name,
+				 'user_password': user_password
+				 }
+				template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
 			else:
-				user_password = ''
-			template_values = {
-			 'user_id': user_id,
-			 'user_name': user_name,
-			 'user_password': user_password
-			 }
-			template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
+				template_values = {
+				 'message': 'Passwords do not match'
+				 }
+				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
