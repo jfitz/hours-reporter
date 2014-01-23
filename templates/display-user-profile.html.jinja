@@ -11,6 +11,7 @@
 {% include "templates/menu.html" %}
 <p>Name: {{ user_name }}</p>
 <p>Password: {{ user_password }}</p>
+<p>Billing profile: {{ billing_profile }}</p>
 <p></p>
 <form method="GET" action="edit-user-profile">
 <input type="hidden" name="user_id" value="{{ user_id }}">

@@ -20,6 +20,7 @@ def user_info_key(user_id=DEFAULT_USER_ID):
 class UserInfo(ndb.Model):
 	name = ndb.StringProperty(indexed=False)
 	password = ndb.StringProperty(indexed=False)
+	billing_profile = ndb.StringProperty(indexed=False)
 	
 def exists_user(user_id):
 	user_info_query = UserInfo.query(ancestor=user_info_key(user_id))
@@ -233,7 +234,6 @@ class LoginPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
 		password = self.request.get('falabala')
-		# verify user ID and password
 		if verify_user(user_id, password):
 			template_values = {
 			 'user_id': user_id
@@ -302,6 +302,7 @@ class DisplayUserProfilePage(webapp2.RequestHandler):
 			if user_info != False:
 				user_name = user_info.name
 				user_password = user_info.password
+				billing_profile = user_info.billing_profile
 				if len(user_password) > 0:
 					user_password = 'xxxxxxxxx'
 				else:
@@ -309,10 +310,12 @@ class DisplayUserProfilePage(webapp2.RequestHandler):
 			else:
 				user_name = ''
 				user_password = ''
+				billing_profile = ''
 			template_values = {
 			 'user_id': user_id,
 			 'user_name': user_name,
-			 'user_password': user_password
+			 'user_password': user_password,
+			 'billing_profile': billing_profile
 			 }
 			template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
 		else:
@@ -328,6 +331,7 @@ class EditUserProfilePage(webapp2.RequestHandler):
 			if user_info != False:
 				user_name = user_info.name
 				user_password = user_info.password
+				billing_profile = user_info.billing_profile
 				if len(user_password) > 0:
 					user_password = 'xxxxxxxxx'
 				else:
@@ -335,10 +339,12 @@ class EditUserProfilePage(webapp2.RequestHandler):
 			else:
 				user_name = ''
 				user_password = ''
+				billing_profile = ''
 			template_values = {
 			 'user_id': user_id,
 			 'user_name': user_name,
-			 'user_password': user_password
+			 'user_password': user_password,
+			 'billing_profile': billing_profile
 			 }
 			template = jinja_environment.get_template('templates/edit-user-profile.html.jinja')
 		else:
@@ -352,11 +358,13 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 		if len(user_id) > 0:
 			user_name = self.request.get('user_name')
 			user_password = self.request.get('user_password')
+			billing_profile = self.request.get('billing_profile')
 			user_info = get_user_info(user_id)
 			if user_info == False:
 				user_info = UserInfo(parent=user_info_key(user_id))
 			user_info.name = user_name
 			user_info.password = user_password
+			user_info.billing_profile = billing_profile
 			user_info.put()
 			if len(user_password) > 0:
 				user_password = 'xxxxxxxxx'
