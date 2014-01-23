@@ -373,7 +373,7 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class DisplayYastProfilePage(webapp2.RequestHandler):
+class DisplayBillingProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -410,13 +410,13 @@ class DisplayYastProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/display-yast-profile.html.jinja')
+			template = jinja_environment.get_template('templates/display-billing-profile.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
  	
-class EditYastProfilePage(webapp2.RequestHandler):
+class EditBillingProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -449,13 +449,13 @@ class EditYastProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/edit-yast-profile.html.jinja')
+			template = jinja_environment.get_template('templates/edit-billing-profile.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class SaveYastProfilePage(webapp2.RequestHandler):
+class SaveBillingProfilePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -494,7 +494,7 @@ class SaveYastProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/display-yast-profile.html.jinja')
+			template = jinja_environment.get_template('templates/display-billing-profile.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
@@ -514,7 +514,7 @@ class DetailForm(webapp2.RequestHandler):
 				template = jinja_environment.get_template('templates/detail-form.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or YAST information found'
+				 'message': 'No user information or billing information found'
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
@@ -630,7 +630,7 @@ class TimesheetForm(webapp2.RequestHandler):
 				template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or YAST information found'
+				 'message': 'No user information or billing information found'
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
@@ -708,7 +708,7 @@ class SummaryForm(webapp2.RequestHandler):
 				template = jinja_environment.get_template('templates/summary-form.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or YAST information found'
+				 'message': 'No user information or billing information found'
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
@@ -743,9 +743,9 @@ application = webapp2.WSGIApplication(
 		('/display-user-profile', DisplayUserProfilePage),
 		('/edit-user-profile', EditUserProfilePage),
 		('/save-user-profile', SaveUserProfilePage),
-		('/display-yast-profile', DisplayYastProfilePage),
-		('/edit-yast-profile', EditYastProfilePage),
-		('/save-yast-profile', SaveYastProfilePage),
+		('/display-billing-profile', DisplayBillingProfilePage),
+		('/edit-billing-profile', EditBillingProfilePage),
+		('/save-billing-profile', SaveBillingProfilePage),
 		('/detail-form', DetailForm),
 		('/details-report', HoursReportHtml),
 		('/details-download', HoursReportDownload),
