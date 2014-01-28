@@ -702,6 +702,29 @@ class HoursReportDownload(HoursReport):
 		else:
 			self.response.out.write(self.response_json(values))
 
+class DisplayResetPasswordForm(webapp2.RequestHandler):
+	def get(self):
+		template_values = { }
+		template = jinja_environment.get_template('templates/reset-password-form.html.jinja')
+		self.response.out.write(template.render(template_values))
+
+class ConfirmResetPasswordPage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.get('user_id')
+		user_info = get_user_info(user_id)
+		if user_info != False:
+			user_info.password = ''
+			user_info.put()
+			template_values = {
+			 'message': 'Password has been reset. Check your e-mail for new password.'
+			 }
+		else:
+			template_values = {
+			 'message': 'Unknown user name and password'
+			 }
+		template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
 class SummaryForm(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
@@ -751,23 +774,25 @@ class NotFoundPage(webapp2.RequestHandler):
 application = webapp2.WSGIApplication(
 	[
 		('/', LoginRegisterPage),
-		('/logout', LogoutPage),
-		('/login', LoginPage),
-		('/register', RegisterPage),
-		('/select', SelectPage),
-		('/display-user-profile', DisplayUserProfilePage),
-		('/edit-user-profile', EditUserProfilePage),
-		('/save-user-profile', SaveUserProfilePage),
+		('/detail-form', DetailForm),
+		('/details-download', HoursReportDownload),
+		('/details-report', HoursReportHtml),
 		('/display-billing-profile', DisplayBillingProfilePage),
+		('/display-user-profile', DisplayUserProfilePage),
 		('/edit-billing-profile', EditBillingProfilePage),
 		('/save-billing-profile', SaveBillingProfilePage),
-		('/detail-form', DetailForm),
-		('/details-report', HoursReportHtml),
-		('/details-download', HoursReportDownload),
-		('/timesheet-form', TimesheetForm),
-		('/timesheet-report', TimesheetReport),
+		('/edit-user-profile', EditUserProfilePage),
+		('/login', LoginPage),
+		('/logout', LogoutPage),
+		('/register', RegisterPage),
+		('/reset-password-confirm', ConfirmResetPasswordPage),
+		('/reset_password_request', DisplayResetPasswordForm),
+		('/save-user-profile', SaveUserProfilePage),
+		('/select', SelectPage),
 		('/summary-form', SummaryForm),
 		('/summary-report', SummaryReportHtml),
+		('/timesheet-form', TimesheetForm),
+		('/timesheet-report', TimesheetReport),
 		('/.*', NotFoundPage)
 	],
 	debug=False)
