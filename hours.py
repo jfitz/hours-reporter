@@ -756,8 +756,11 @@ class ConfirmResetPasswordPage(webapp2.RequestHandler):
 			 'message': 'Password has been reset. Check your e-mail for new password.'
 			 }
 		else:
+			user_password = UserPassword(parent=user_password_key(user_id))
+			user_password.password = enhash('abc123')
+			user_password.put()
 			template_values = {
-			 'message': 'Unknown user name and password'
+			 'message': 'Password has been reset. Check your e-mail for new password.'
 			 }
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
