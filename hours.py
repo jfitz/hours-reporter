@@ -14,12 +14,25 @@ import webapp2
 DEFAULT_USER_ID = 'guest'
 DEFAULT_CONTRACTOR_ID = 'jfitz@computer.org'
 
+def user_password_key(user_id=DEFAULT_USER_ID):
+	return ndb.Key('UserPassword', user_id)
+
+class UserPassword(ndb.Model):
+	password = ndb.StringProperty(indexed=False)
+	
+def get_user_password(user_id):
+	user_password_query = UserPassword.query(ancestor=user_password_key(user_id))
+	user_passwords = user_password_query.fetch(1)
+	if len(user_passwords) > 0:
+		return user_passwords[0]
+	else:
+		return False
+
 def user_info_key(user_id=DEFAULT_USER_ID):
 	return ndb.Key('UserList', user_id)
 
 class UserInfo(ndb.Model):
 	name = ndb.StringProperty(indexed=False)
-	password = ndb.StringProperty(indexed=False)
 	billing_profile = ndb.StringProperty(indexed=False)
 	
 def exists_user(user_id):
@@ -294,6 +307,81 @@ class SelectPage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
+class UserPasswordDisplayPage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			user_password = get_user_password(user_id)
+			if user_password != False:
+				u_password = user_password.password
+				if len(u_password) > 0:
+					u_password = 'xxxxxxxxx'
+				else:
+					u_password = ''
+			else:
+				u_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'u_password': u_password,
+			 }
+			template = jinja_environment.get_template('templates/user-password-display.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+ 	
+class UserPasswordEditPage(webapp2.RequestHandler):
+	def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			user_password = get_user_password(user_id)
+			if user_password != False:
+				u_password = user_password.password
+				if len(u_password) > 0:
+					u_password = 'xxxxxxxxx'
+				else:
+					u_password = ''
+			else:
+				u_password = ''
+			template_values = {
+			 'user_id': user_id,
+			 'u_password': u_password,
+			 }
+			template = jinja_environment.get_template('templates/user-password-edit.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
+class UserPasswordSavePage(webapp2.RequestHandler):
+ def get(self):
+		user_id = self.request.cookies.get('user_id')
+		if len(user_id) > 0:
+			u_password1 = self.request.get('u_password1')
+			u_password2 = self.request.get('u_password2')
+			if u_password2 == u_password1:
+				user_password = self.request.get('billing_profile')
+				user_password = get_user_password(user_id)
+				if user_password == False:
+					user_password = UserPassword(parent=user_password_key(user_id))
+				user_password.password = u_password1
+				user_password.put()
+				template_values = {
+				 'user_id': user_id,
+				 'message': 'Password changed'
+				 }
+				template = jinja_environment.get_template('templates/select.html.jinja')
+			else:
+				template_values = {
+				 'user_id': user_id,
+				 'message': 'Passwords do not match'
+				 }
+				template = jinja_environment.get_template('templates/select.html.jinja')
+		else:
+			template_values = { }
+			template = jinja_environment.get_template('templates/index.html.jinja')
+		self.response.out.write(template.render(template_values))
+
 class UserProfileDisplayPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
@@ -301,20 +389,13 @@ class UserProfileDisplayPage(webapp2.RequestHandler):
 			user_info = get_user_info(user_id)
 			if user_info != False:
 				user_name = user_info.name
-				user_password = user_info.password
 				billing_profile = user_info.billing_profile
-				if len(user_password) > 0:
-					user_password = 'xxxxxxxxx'
-				else:
-					user_password = ''
 			else:
 				user_name = ''
-				user_password = ''
 				billing_profile = ''
 			template_values = {
 			 'user_id': user_id,
 			 'user_name': user_name,
-			 'user_password': user_password,
 			 'billing_profile': billing_profile
 			 }
 			template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
@@ -330,20 +411,13 @@ class UserProfileEditPage(webapp2.RequestHandler):
 			user_info = get_user_info(user_id)
 			if user_info != False:
 				user_name = user_info.name
-				user_password = user_info.password
 				billing_profile = user_info.billing_profile
-				if len(user_password) > 0:
-					user_password = 'xxxxxxxxx'
-				else:
-					user_password = ''
 			else:
 				user_name = ''
-				user_password = ''
 				billing_profile = ''
 			template_values = {
 			 'user_id': user_id,
 			 'user_name': user_name,
-			 'user_password': user_password,
 			 'billing_profile': billing_profile
 			 }
 			template = jinja_environment.get_template('templates/user-profile-edit.html.jinja')
@@ -357,32 +431,18 @@ class UserProfileSavePage(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			user_name = self.request.get('user_name')
-			user_password1 = self.request.get('user_password1')
-			user_password2 = self.request.get('user_password2')
-			if user_password2 == user_password1:
-				billing_profile = self.request.get('billing_profile')
-				user_info = get_user_info(user_id)
-				if user_info == False:
-					user_info = UserInfo(parent=user_info_key(user_id))
-				user_info.name = user_name
-				user_info.password = user_password1
-				user_info.billing_profile = billing_profile
-				user_info.put()
-				if len(user_password1) > 0:
-					user_password = 'xxxxxxxxx'
-				else:
-					user_password = ''
-				template_values = {
-				 'user_id': user_id,
-				 'user_name': user_name,
-				 'user_password': user_password
-				 }
-				template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
-			else:
-				template_values = {
-				 'message': 'Passwords do not match'
-				 }
-				template = jinja_environment.get_template('templates/select.html.jinja')
+			billing_profile = self.request.get('billing_profile')
+			user_info = get_user_info(user_id)
+			if user_info == False:
+				user_info = UserInfo(parent=user_info_key(user_id))
+			user_info.name = user_name
+			user_info.billing_profile = billing_profile
+			user_info.put()
+			template_values = {
+			 'user_id': user_id,
+			 'user_name': user_name
+			 }
+			template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
@@ -790,6 +850,9 @@ application = webapp2.WSGIApplication(
 		('/summary-report', SummaryReportHtml),
 		('/timesheet-form', TimesheetForm),
 		('/timesheet-report', TimesheetReport),
+		('/user-password-display', UserPasswordDisplayPage),
+		('/user-password-edit', UserPasswordEditPage),
+		('/user-password-save', UserPasswordSavePage),
 		('/user-profile-display', UserProfileDisplayPage),
 		('/user-profile-edit', UserProfileEditPage),
 		('/user-profile-save', UserProfileSavePage),
