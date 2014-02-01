@@ -11,15 +11,19 @@
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
-<form method="GET" action="save-user-profile">
-<p>Name: <input type="text" name="user_name" value="{{ user_name }}"></p>
-<p>Password: <input type="password" name="user_password1" value="{{ user_password }}"></p>
-<p>Confirm password: <input type="password" name="user_password2" value="{{ user_password }}"></p>
-<p>Billing profile: <input type="text" name="billing_profile" value="{{ billing_profile }}"></p>
+<p>Profile: {{ contractor_id }}</p>
+<form method="GET" action="billing-profile-save">
+<p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
+<p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
+<p>End client: <input type="text" name="end_client_name" value="{{ end_client_name }}"></p>
+<p>Billed client: <input type="text" name="billed_client_name" value="{{ billed_client_name }}"></p>
+<p>Yast ID: <input type="text" name="yast_id" value="{{ yast_id }}"></p>
+<p>Yast password: <input type="password" name="yast_password" value="{{ yast_password }}"></p>
+<p>Yast parent ID: <input type="text" name="yast_parent_project_id" value="{{ yast_parent_project_id }}"></p>
 <button type="submit" class="submitbutton" value="Save">Commit</button>
 </form>
 <form method="GET" action="select">
-<input type="hidden" name="user_id" value="{{ user_id }}">
+<input type="hidden" name="contractor_id" value="{{ contractor_id }}">
 <button type="submit" class="submitbutton" value="Cancel">Cancel</button>
 </form>
 <p></p>

@@ -294,7 +294,7 @@ class SelectPage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class DisplayUserProfilePage(webapp2.RequestHandler):
+class UserProfileDisplayPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -317,13 +317,13 @@ class DisplayUserProfilePage(webapp2.RequestHandler):
 			 'user_password': user_password,
 			 'billing_profile': billing_profile
 			 }
-			template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
+			template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
  	
-class EditUserProfilePage(webapp2.RequestHandler):
+class UserProfileEditPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -346,13 +346,13 @@ class EditUserProfilePage(webapp2.RequestHandler):
 			 'user_password': user_password,
 			 'billing_profile': billing_profile
 			 }
-			template = jinja_environment.get_template('templates/edit-user-profile.html.jinja')
+			template = jinja_environment.get_template('templates/user-profile-edit.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class SaveUserProfilePage(webapp2.RequestHandler):
+class UserProfileSavePage(webapp2.RequestHandler):
  def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -377,7 +377,7 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 				 'user_name': user_name,
 				 'user_password': user_password
 				 }
-				template = jinja_environment.get_template('templates/display-user-profile.html.jinja')
+				template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
 			else:
 				template_values = {
 				 'message': 'Passwords do not match'
@@ -388,7 +388,7 @@ class SaveUserProfilePage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class DisplayBillingProfilePage(webapp2.RequestHandler):
+class BillingProfileDisplayPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -425,13 +425,13 @@ class DisplayBillingProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/display-billing-profile.html.jinja')
+			template = jinja_environment.get_template('templates/billing-profile-display.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
  	
-class EditBillingProfilePage(webapp2.RequestHandler):
+class BillingProfileEditPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -464,13 +464,13 @@ class EditBillingProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/edit-billing-profile.html.jinja')
+			template = jinja_environment.get_template('templates/billing-profile-edit.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class SaveBillingProfilePage(webapp2.RequestHandler):
+class BillingProfileSavePage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
@@ -509,7 +509,7 @@ class SaveBillingProfilePage(webapp2.RequestHandler):
 			 'yast_password': yast_password,
 			 'yast_parent_project_id': yast_parent_project_id
 			 }
-			template = jinja_environment.get_template('templates/display-billing-profile.html.jinja')
+			template = jinja_environment.get_template('templates/billing-profile-display.html.jinja')
 		else:
 			template_values = { }
 			template = jinja_environment.get_template('templates/index.html.jinja')
@@ -774,25 +774,25 @@ class NotFoundPage(webapp2.RequestHandler):
 application = webapp2.WSGIApplication(
 	[
 		('/', LoginRegisterPage),
+		('/billing-profile-display', BillingProfileDisplayPage),
+		('/billing-profile-edit', BillingProfileEditPage),
+		('/billing-profile-save', BillingProfileSavePage),
 		('/detail-form', DetailForm),
 		('/details-download', HoursReportDownload),
 		('/details-report', HoursReportHtml),
-		('/display-billing-profile', DisplayBillingProfilePage),
-		('/display-user-profile', DisplayUserProfilePage),
-		('/edit-billing-profile', EditBillingProfilePage),
-		('/save-billing-profile', SaveBillingProfilePage),
-		('/edit-user-profile', EditUserProfilePage),
 		('/login', LoginPage),
 		('/logout', LogoutPage),
 		('/register', RegisterPage),
 		('/reset-password-confirm', ConfirmResetPasswordPage),
 		('/reset_password_request', DisplayResetPasswordForm),
-		('/save-user-profile', SaveUserProfilePage),
 		('/select', SelectPage),
 		('/summary-form', SummaryForm),
 		('/summary-report', SummaryReportHtml),
 		('/timesheet-form', TimesheetForm),
 		('/timesheet-report', TimesheetReport),
+		('/user-profile-display', UserProfileDisplayPage),
+		('/user-profile-edit', UserProfileEditPage),
+		('/user-profile-save', UserProfileSavePage),
 		('/.*', NotFoundPage)
 	],
 	debug=False)
