@@ -14,6 +14,10 @@ import webapp2
 DEFAULT_USER_ID = 'guest'
 DEFAULT_CONTRACTOR_ID = 'jfitz@computer.org'
 
+def enhash(text):
+	# return sha256(text, 'salt', 'key')
+	return text
+
 def user_password_key(user_id=DEFAULT_USER_ID):
 	return ndb.Key('UserPassword', user_id)
 
@@ -43,10 +47,13 @@ def exists_user(user_id):
 		exists = True
 	return exists
 	
-def verify_user(user_id, password):
+def verify_user(user_id, password_hash):
 	verify = False
-	if password == 'sword':
-		verify = True
+	user_password = get_user_password(user_id)
+	if user_password != False:
+		stored_password_hash = user_password.password
+		if password_hash == stored_password_hash:
+			verify = True
 	return verify
 
 def get_user_info(user_id):
@@ -247,7 +254,8 @@ class LoginPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
 		password = self.request.get('falabala')
-		if verify_user(user_id, password):
+		password_hash = enhash(password)
+		if verify_user(user_id, password_hash):
 			template_values = {
 			 'user_id': user_id
 			 }
@@ -281,6 +289,8 @@ class RegisterPage(webapp2.RequestHandler):
 			message = 'User ID is required'
 				
 		if len(message) == 0:
+			# create user password
+			# create user profile
 			template_values = {
 			 'user_id': user_id
 			 }
@@ -307,45 +317,12 @@ class SelectPage(webapp2.RequestHandler):
 			template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
-class UserPasswordDisplayPage(webapp2.RequestHandler):
-	def get(self):
-		user_id = self.request.cookies.get('user_id')
-		if len(user_id) > 0:
-			user_password = get_user_password(user_id)
-			if user_password != False:
-				u_password = user_password.password
-				if len(u_password) > 0:
-					u_password = 'xxxxxxxxx'
-				else:
-					u_password = ''
-			else:
-				u_password = ''
-			template_values = {
-			 'user_id': user_id,
-			 'u_password': u_password,
-			 }
-			template = jinja_environment.get_template('templates/user-password-display.html.jinja')
-		else:
-			template_values = { }
-			template = jinja_environment.get_template('templates/index.html.jinja')
-		self.response.out.write(template.render(template_values))
- 	
 class UserPasswordEditPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
-			user_password = get_user_password(user_id)
-			if user_password != False:
-				u_password = user_password.password
-				if len(u_password) > 0:
-					u_password = 'xxxxxxxxx'
-				else:
-					u_password = ''
-			else:
-				u_password = ''
 			template_values = {
-			 'user_id': user_id,
-			 'u_password': u_password,
+			 'user_id': user_id
 			 }
 			template = jinja_environment.get_template('templates/user-password-edit.html.jinja')
 		else:
@@ -360,11 +337,11 @@ class UserPasswordSavePage(webapp2.RequestHandler):
 			u_password1 = self.request.get('u_password1')
 			u_password2 = self.request.get('u_password2')
 			if u_password2 == u_password1:
-				user_password = self.request.get('billing_profile')
 				user_password = get_user_password(user_id)
 				if user_password == False:
 					user_password = UserPassword(parent=user_password_key(user_id))
-				user_password.password = u_password1
+				password_hash = enhash(u_password1)
+				user_password.password = password_hash
 				user_password.put()
 				template_values = {
 				 'user_id': user_id,
@@ -771,10 +748,10 @@ class DisplayResetPasswordForm(webapp2.RequestHandler):
 class ConfirmResetPasswordPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
-		user_info = get_user_info(user_id)
-		if user_info != False:
-			user_info.password = ''
-			user_info.put()
+		user_password = get_user_password(user_id)
+		if user_password != False:
+			user_password.password = enhash('abc123')
+			user_password.put()
 			template_values = {
 			 'message': 'Password has been reset. Check your e-mail for new password.'
 			 }
@@ -850,7 +827,6 @@ application = webapp2.WSGIApplication(
 		('/summary-report', SummaryReportHtml),
 		('/timesheet-form', TimesheetForm),
 		('/timesheet-report', TimesheetReport),
-		('/user-password-display', UserPasswordDisplayPage),
 		('/user-password-edit', UserPasswordEditPage),
 		('/user-password-save', UserPasswordSavePage),
 		('/user-profile-display', UserProfileDisplayPage),
