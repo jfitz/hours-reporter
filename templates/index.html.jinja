@@ -5,6 +5,19 @@
 {% include "templates/title.html" %}
 {% include "templates/css.html" %}
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <script type="text/javascript">
+  function check_passwords_match(){
+   p1 = document.getElementById('new_user_password').value;
+   p2 = document.getElementById('new_user_confirm_password').value;
+   message = '';
+   if ( p1 == p2 ) {
+	   message = "Passwords match";
+    } else {
+	   message = "Passwords do not match";
+	 }
+	document.getElementById('new_user_confirm_password_message').innerHTML = message;
+	}
+  </script>
 </head>
 <body>
 {% include "templates/logged_out_header.html" %}
@@ -18,11 +31,11 @@
 <form method="GET" action="login">
 <table summary="login form" >
 <tbody>
-<tr><td><span class="header">Returning users</span></td></tr>
-<tr><td>User ID:</td><td><input type="text" name="user_id"></td></tr>
-<tr><td>Password:</td><td><input type="password" name="falabala"></td></tr>
-<tr><td></td><td><button type="submit" class="submitbutton" value="Login">Login</button></td></tr>
-<tr><td></td><td><a href="reset_password_request" class="linkasbutton">Forgot my password</a></td></tr>
+<tr><td colspan="2"><span class="header">Returning&nbsp;users</span></td><td></td></tr>
+<tr><td>User ID:</td><td><input type="text" name="user_id"></td><td class="fieldmessage">Required</td></tr>
+<tr><td>Password:</td><td><input type="password" name="falabala"></td><td class="fieldmessage">Required</td></tr>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Login">Login</button></td><td></td></tr>
+<tr><td></td><td><a href="reset_password_request" class="linkaslink">Forgot&nbsp;my&nbsp;password</a></td><td></td></tr>
 </tbody>
 </table>
 </form>
@@ -31,11 +44,11 @@
 <form method="GET" action="register">
 <table summary="registration form" >
 <tbody>
-<tr><td><span class="header">New users</span></td></tr>
-<tr><td>User ID:</td><td><input type="text" name="user_id"></td></tr>
-<tr><td>Password:</td><td><input type="password" name="fala"></td></tr>
-<tr><td>Confirm password:</td><td><input type="password" name="bala"></td></tr>
-<tr><td></td><td><button type="submit" class="submitbutton" value="Register">Register</button></td></tr>
+<tr><td colspan="2"><span class="header">New&nbsp;users</span></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr><td>User ID:</td><td><input type="text" name="user_id"></td><td id="new_user_id_message" class="fieldmessage">Required</td></tr>
+<tr><td>Password:</td><td><input type="password" name="fala" id="new_user_password"></td><td id="new user_password_message" class="fieldmessage"></td></tr>
+<tr><td>Confirm password:</td><td><input type="password" name="bala" id="new_user_confirm_password" onkeyup="check_passwords_match()"></td><td id="new_user_confirm_password_message" class="fieldmessage"></td></tr>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Register">Register</button></td><td></td></tr>
 </tbody>
 </table>
 </form>

@@ -1,16 +1,22 @@
 /* CSS for Hours Reporter */
 .header {
   -webkit-appearance: none;
-  display: block;
   border: 5px;
   border-color: #bbaa77; 
-  border-radius: 5px;
   background: white;
   color: #bbaa77;
   font: -webkit-small-control;
   font-size: 20px;
   font-weight: bold;
-  text-decoration: none;
+}
+.fieldmessage {
+  -webkit-appearance: none;
+  border-color: #bbaa77; 
+  background: white;
+  color: #bbaa77;
+  font: -webkit-small-control;
+  font-size: 14px;
+  vertical-align: middle;
 }
 .logoutbutton {
   -webkit-appearance: none;
@@ -58,6 +64,17 @@
   font-size: 16px;
   font-weight: bold;
   text-decoration: none;
+}
+.linkaslink {
+  -webkit-appearance: none;
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  background: white;
+  color: #bbaa77;
+  font: -webkit-small-control;
+  font-size: 14px;
+  text-decoration: underline;
 }
 .pagemenulink1 {
   display: block;
