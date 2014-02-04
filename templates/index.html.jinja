@@ -17,6 +17,12 @@
 	 }
 	document.getElementById('new_user_confirm_password_message').innerHTML = message;
 	}
+	function password_onkeyup() {
+	  check_passwords_match();
+	}
+	function confirm_password_onkeyup() {
+	  check_passwords_match();
+	}
   </script>
 </head>
 <body>
@@ -46,8 +52,8 @@
 <tbody>
 <tr><td colspan="2"><span class="header">New&nbsp;users</span></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
 <tr><td>User ID:</td><td><input type="text" name="user_id"></td><td id="new_user_id_message" class="fieldmessage">Required</td></tr>
-<tr><td>Password:</td><td><input type="password" name="fala" id="new_user_password"></td><td id="new user_password_message" class="fieldmessage"></td></tr>
-<tr><td>Confirm password:</td><td><input type="password" name="bala" id="new_user_confirm_password" onkeyup="check_passwords_match()"></td><td id="new_user_confirm_password_message" class="fieldmessage"></td></tr>
+<tr><td>Password:</td><td><input type="password" name="fala" id="new_user_password" onkeyup="password_onkeyup()"></td><td id="new user_password_message" class="fieldmessage"></td></tr>
+<tr><td>Confirm password:</td><td><input type="password" name="bala" id="new_user_confirm_password" onkeyup="confirm_password_onkeyup()"></td><td id="new_user_confirm_password_message" class="fieldmessage"></td></tr>
 <tr><td></td><td><button type="submit" class="submitbutton" value="Register">Register</button></td><td></td></tr>
 </tbody>
 </table>

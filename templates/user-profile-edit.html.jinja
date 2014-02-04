@@ -4,22 +4,24 @@
 {% include "templates/meta.html" %}
 {% include "templates/title.html" %}
 {% include "templates/css.html" %}
-  <style type="text/css">
-  </style>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 </head>
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
+<table summary="profile form" >
+<tbody>
 <form method="GET" action="user-profile-save">
-<p>Name: <input type="text" name="user_name" value="{{ user_name }}"></p>
-<p>Billing profile: <input type="text" name="billing_profile" value="{{ billing_profile }}"></p>
-<button type="submit" class="submitbutton" value="Save">Commit</button>
+<tr><td>Name:</td><td><input type="text" name="user_name" value="{{ user_name }}"></td></tr>
+<tr><td>Billing profile:</td><td><input type="text" name="billing_profile" value="{{ billing_profile }}"></td></tr>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Save">Commit</button></td>
 </form>
 <form method="GET" action="select">
 <input type="hidden" name="user_id" value="{{ user_id }}">
-<button type="submit" class="submitbutton" value="Cancel">Cancel</button>
+<td><button type="submit" class="submitbutton" value="Cancel">Cancel</button></td></tr>
 </form>
+</tbody>
+</table>
 <p></p>
 <p><img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="Powered by Google App Engine" /></p>
