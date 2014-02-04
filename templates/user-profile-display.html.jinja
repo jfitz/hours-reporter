@@ -9,13 +9,16 @@
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
-<p>Name: {{ user_name }}</p>
-<p>Billing profile: {{ billing_profile }}</p>
-<p></p>
+<table summary="display profile">
+<tr><td>Name:</td><td>{{ user_name }}</td></tr>
+<tr><td>Billing profile:</td><td>{{ billing_profile }}</td></tr>
+<tr><td></td><td><a href="user-password-edit" class="linkaslink">Change Password</a></td><td></td></tr>
 <form method="GET" action="user-profile-edit">
 <input type="hidden" name="user_id" value="{{ user_id }}">
-<button type="submit" class="submitbutton" value="Edit">Edit</button>
+<tr><td></td><td><button type="submit" class="submitbutton" value="Edit">Edit</button></td></tr>
 </form>
+</tbody>
+</table>
 <p></p>
 <img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="Powered by Google App Engine" />
