@@ -1,26 +1,24 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
 {% include "templates/meta.html" %}
 {% include "templates/title.html" %}
+{% include "templates/head_bootstrap.html" %}
 {% include "templates/css.html" %}
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+{% include "templates/head_gae_js.html" %}
 </head>
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
-<table summary="display profile">
-<tr><td>Name:</td><td>{{ user_name }}</td></tr>
-<tr><td>Billing profile:</td><td>{{ billing_profile }}</td></tr>
-<tr><td></td><td><a href="user-password-edit" class="linkaslink">Change Password</a></td><td></td></tr>
+<h1>User profile</h1>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Name:</div><div class="col-xs-4">{{ user_name }}</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Billing profile:</div><div class="col-xs-4">{{ billing_profile }}</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3"></div><div class="col-xs-4"><a href="user-password-edit" class="linkaslink">Change Password</a></div></div>
 <form method="GET" action="user-profile-edit">
 <input type="hidden" name="user_id" value="{{ user_id }}">
-<tr><td></td><td><button type="submit" class="submitbutton" value="Edit">Edit</button></td></tr>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3"></div><div class="col-xs-1"><button type="submit" class="submitbutton" value="Edit">Edit</button></div></div>
 </form>
-</tbody>
-</table>
-<p></p>
-<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
-alt="Powered by Google App Engine" />
+{% include "templates/body_gae_logo.html" %}
+{% include "templates/body_bootstrap.html" %}
 </body>
 </html>

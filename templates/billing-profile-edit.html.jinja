@@ -1,33 +1,32 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
 {% include "templates/meta.html" %}
 {% include "templates/title.html" %}
+{% include "templates/head_bootstrap.html" %}
 {% include "templates/css.html" %}
-  <style type="text/css">
-  </style>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+{% include "templates/head_gae_js.html" %}
 </head>
 <body>
 {% include "templates/logged_in_header.html" %}
 {% include "templates/menu.html" %}
-<p>Profile: {{ contractor_id }}</p>
+<h1>Billing profile</h1>
+<div class="row"><div class="col-xs-3">Profile:</div><div class="col-xs-1">{{ contractor_id }}</div></div>
 <form method="GET" action="billing-profile-save">
-<p>Approver name: <input type="text" name="approver_name" value="{{ approver_name }}"></p>
-<p>Approver contact: <input type="text" name="approver_contact" value="{{ approver_contact }}"></p>
-<p>End client: <input type="text" name="end_client_name" value="{{ end_client_name }}"></p>
-<p>Billed client: <input type="text" name="billed_client_name" value="{{ billed_client_name }}"></p>
-<p>Yast ID: <input type="text" name="yast_id" value="{{ yast_id }}"></p>
-<p>Yast password: <input type="password" name="yast_password" value="{{ yast_password }}"></p>
-<p>Yast parent ID: <input type="text" name="yast_parent_project_id" value="{{ yast_parent_project_id }}"></p>
-<button type="submit" class="submitbutton" value="Save">Commit</button>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Approver name:</div><div class="col-xs-4"><input type="text" name="approver_name" value="{{ approver_name }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Approver contact:</div><div class="col-xs-4"><input type="text" name="approver_contact" value="{{ approver_contact }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">End client:</div><div class="col-xs-4"><input type="text" name="end_client_name" value="{{ end_client_name }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Billed client:</div><div class="col-xs-4"><input type="text" name="billed_client_name" value="{{ billed_client_name }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Yast ID:</div><div class="col-xs-4"><input type="text" name="yast_id" value="{{ yast_id }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Yast password:</div><div class="col-xs-4"><input type="password" name="yast_password" value="{{ yast_password }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Yast parent ID:</div><div class="col-xs-4"><input type="text" name="yast_parent_project_id" value="{{ yast_parent_project_id }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3"></div><div class="col-md-1"><button type="submit" class="submitbutton" value="Save">Commit</button></div>
 </form>
 <form method="GET" action="select">
 <input type="hidden" name="contractor_id" value="{{ contractor_id }}">
-<button type="submit" class="submitbutton" value="Cancel">Cancel</button>
+<div class="col-xs-1"><button type="submit" class="submitbutton" value="Cancel">Cancel</button></div></div>
 </form>
-<p></p>
-<p><img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
-alt="Powered by Google App Engine" /></p>
+{% include "templates/body_gae_logo.html" %}
+{% include "templates/body_bootstrap.html" %}
 </body>
 </html>

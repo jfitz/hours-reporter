@@ -1,9 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
 {% include "templates/meta.html" %}
 {% include "templates/title.html" %}
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+{% include "templates/head_bootstrap.html" %}
+{% include "templates/css.html" %}
+{% include "templates/head_gae_js.html" %}
 </head>
 <body>
 <h1>Monthly summary</h1>
@@ -38,8 +40,7 @@
 {% else %}
 <p>Report status was {{ status }}</p>
 {% endif %}
-<p></p>
-<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" 
-alt="Powered by Google App Engine" />
+{% include "templates/body_gae_logo.html" %}
+{% include "templates/body_bootstrap.html" %}
 </body>
 </html>

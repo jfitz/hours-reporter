@@ -1,14 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
 {% include "templates/meta.html" %}
 {% include "templates/title.html" %}
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+{% include "templates/head_bootstrap.html" %}
+{% include "templates/css.html" %}
+{% include "templates/head_gae_js.html" %}
 </head>
 <body>
 {% include "templates/logged_in_header.html" %}
 <p>Could not retrieve data from yast.com.</p>
 <p>Error message: Invalid date</p>
-<p></p>
+{% include "templates/body_gae_logo.html" %}
+{% include "templates/body_bootstrap.html" %}
 </body>
 </html>
