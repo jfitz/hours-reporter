@@ -12,9 +12,9 @@
 {% include "templates/menu.html" %}
 <h1>User profile</h1>
 <form method="GET" action="user-profile-save">
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Name:</div><div class="col-xs-4"><input type="text" name="user_name" value="{{ user_name }}"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3">Billing profile:</div><div class="col-xs-4"><input type="text" name="billing_profile" value="{{ billing_profile }}"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3"></div><div class="col-xs-1"><button type="submit" class="submitbutton" value="Save">Commit</button></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Name:</div><div class="col-xs-4 col-md-2"><input type="text" name="user_name" value="{{ user_name }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Billing profile:</div><div class="col-xs-4 col-md-2"><input type="text" name="billing_profile" value="{{ billing_profile }}"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2"></div><div class="col-xs-1"><button type="submit" class="submitbutton" value="Save">Commit</button></div>
 </form>
 <form method="GET" action="select">
 <input type="hidden" name="user_id" value="{{ user_id }}">
