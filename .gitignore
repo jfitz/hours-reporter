@@ -4,3 +4,6 @@
 # ignore compiled Python files
 *.pyc
 
+# ignore package sources
+external packages/
+
