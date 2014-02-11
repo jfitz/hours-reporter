@@ -6,63 +6,20 @@
 {% include "templates/head_bootstrap.html" %}
 {% include "templates/css.html" %}
 {% include "templates/head_gae_js.html" %}
-  <script type="text/javascript">
-  function check_passwords_match(){
-   p1 = document.getElementById('new_user_password').value;
-   p2 = document.getElementById('new_user_confirm_password').value;
-   message = '';
-   if ( p1 == p2 ) {
-	   message = "Passwords match";
-    } else {
-	   message = "Passwords do not match";
-	 }
-	document.getElementById('new_user_confirm_password_message').innerHTML = message;
-	}
-	function password_onkeyup() {
-	  check_passwords_match();
-	}
-	function confirm_password_onkeyup() {
-	  check_passwords_match();
-	}
-  </script>
 </head>
 <body>
 {% include "templates/logged_out_header.html" %}
 {% if message != '' %}
 <p>{{ message }}</p>
 {% endif %}
-<table summary="login options" >
-<tbody>
-<tr>
-<td style="padding-left: 50px; padding-right: 50px;">
 <form method="GET" action="login">
-<table summary="login form" >
-<tbody>
-<tr><td colspan="2"><span class="header">Returning&nbsp;users</span></td><td></td></tr>
-<tr><td>User ID:</td><td><input type="text" name="user_id"></td><td class="fieldmessage">Required</td></tr>
-<tr><td>Password:</td><td><input type="password" name="falabala"></td><td class="fieldmessage">Required</td></tr>
-<tr><td></td><td><button type="submit" class="submitbutton" value="Login">Login</button></td><td></td></tr>
-<tr><td></td><td><a href="reset_password_request" class="linkaslink">Forgot&nbsp;my&nbsp;password</a></td><td></td></tr>
-</tbody>
-</table>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">User ID:</div><div class="col-xs-2 col-md-1"><input type="text" name="user_id"></div><div class="col-xs-2 col-md-1 fieldmessage">Required</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">Password:</div><div class="col-xs-2 col-md-1"><input type="password" name="falabala"></div><div class="col-xs-2 col-md-1 fieldmessage">Required</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><button type="submit" class="submitbutton" value="Login">Login</button></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><a href="reset_password_request" class="linkaslink">Forgot&nbsp;my&nbsp;password</a></div></div>
 </form>
-</td>
-<td style="padding-left: 50px; padding-right: 50px;">
-<form method="GET" action="register">
-<table summary="registration form" >
-<tbody>
-<tr><td colspan="2"><span class="header">New&nbsp;users</span></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-<tr><td>User ID:</td><td><input type="text" name="user_id"></td><td id="new_user_id_message" class="fieldmessage">Required</td></tr>
-<tr><td>Password:</td><td><input type="password" name="fala" id="new_user_password" onkeyup="password_onkeyup()"></td><td id="new user_password_message" class="fieldmessage"></td></tr>
-<tr><td>Confirm password:</td><td><input type="password" name="bala" id="new_user_confirm_password" onkeyup="confirm_password_onkeyup()"></td><td id="new_user_confirm_password_message" class="fieldmessage"></td></tr>
-<tr><td></td><td><button type="submit" class="submitbutton" value="Register">Register</button></td><td></td></tr>
-</tbody>
-</table>
-</form>
-</td>
-</tr>
-</tbody>
-</table>
+<div class="row"><div class="col-xs-1">&nbsp;</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><a href="register-form" class="linkaslink">Register&nbsp;new&nbsp;user</a></div></div>
 {% include "templates/body_gae_logo.html" %}
 {% include "templates/body_bootstrap.html" %}
 </body>

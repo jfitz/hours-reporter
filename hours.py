@@ -269,6 +269,12 @@ class LoginPage(webapp2.RequestHandler):
 			self.response.set_cookie('user_id', '')
 		self.response.out.write(template.render(template_values))
 
+class RegisterFormPage(webapp2.RequestHandler):
+	def get(self):
+		template_values = { }
+		template = jinja_environment.get_template('templates/register-form.html.jinja')
+		self.response.out.write(template.render(template_values))
+
 class RegisterPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
@@ -300,7 +306,7 @@ class RegisterPage(webapp2.RequestHandler):
 			template_values = {
 			 'message': message
 			 }
-			template = jinja_environment.get_template('templates/index.html.jinja')
+			template = jinja_environment.get_template('templates/register-form.html.jinja')
 			self.response.set_cookie('user_id', '')
 		self.response.out.write(template.render(template_values))
 
@@ -823,6 +829,7 @@ application = webapp2.WSGIApplication(
 		('/login', LoginPage),
 		('/logout', LogoutPage),
 		('/register', RegisterPage),
+		('/register-form', RegisterFormPage),
 		('/reset-password-confirm', ConfirmResetPasswordPage),
 		('/reset_password_request', DisplayResetPasswordForm),
 		('/select', SelectPage),
