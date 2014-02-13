@@ -67,7 +67,7 @@ def get_user_info(user_id):
 def contractor_info_key(contractor_id=DEFAULT_CONTRACTOR_ID):
 	return ndb.Key('ContractorList', contractor_id)
 
-class ContractorInfo(ndb.Model):
+class BillingInfo(ndb.Model):
 	approver_name = ndb.StringProperty(indexed=False)
 	approver_contact = ndb.StringProperty(indexed=False)
 	end_client_name = ndb.StringProperty(indexed=False)
@@ -76,11 +76,11 @@ class ContractorInfo(ndb.Model):
 	yast_password = ndb.StringProperty(indexed=False)
 	yast_parent_project_id = ndb.IntegerProperty(indexed=False)
 
-def get_contractor_info(contractor_id):
-	contractor_info_query = ContractorInfo.query(ancestor=contractor_info_key(contractor_id))
-	contractor_infos = contractor_info_query.fetch(1)
-	if len(contractor_infos) > 0:
-		return contractor_infos[0]
+def get_billing_info(contractor_id):
+	billing_info_query = BillingInfo.query(ancestor=contractor_info_key(contractor_id))
+	billing_infos = billing_info_query.fetch(1)
+	if len(billing_infos) > 0:
+		return billing_infos[0]
 	else:
 		return False
 
@@ -436,19 +436,19 @@ class BillingProfileDisplayPage(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if contractor_info != False:
-				approver_name = contractor_info.approver_name
-				approver_contact = contractor_info.approver_contact
-				end_client_name = contractor_info.end_client_name
-				billed_client_name = contractor_info.billed_client_name
-				yast_id = contractor_info.yast_id
-				yast_password = contractor_info.yast_password
+			billing_info = get_billing_info(contractor_id)
+			if billing_info != False:
+				approver_name = billing_info.approver_name
+				approver_contact = billing_info.approver_contact
+				end_client_name = billing_info.end_client_name
+				billed_client_name = billing_info.billed_client_name
+				yast_id = billing_info.yast_id
+				yast_password = billing_info.yast_password
 				if len(yast_password) > 0:
 					yast_password = 'xxxxxxxxx'
 				else:
 					yast_password = ''
-				yast_parent_project_id = str(contractor_info.yast_parent_project_id)
+				yast_parent_project_id = str(billing_info.yast_parent_project_id)
 			else:
 				approver_name = ''
 				approver_contact = ''
@@ -479,15 +479,15 @@ class BillingProfileEditPage(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if contractor_info != False:
-				approver_name = contractor_info.approver_name
-				approver_contact = contractor_info.approver_contact
-				end_client_name = contractor_info.end_client_name
-				billed_client_name = contractor_info.billed_client_name
-				yast_id = contractor_info.yast_id
-				yast_password = contractor_info.yast_password
-				yast_parent_project_id = str(contractor_info.yast_parent_project_id)
+			billing_info = get_billing_info(contractor_id)
+			if billing_info != False:
+				approver_name = billing_info.approver_name
+				approver_contact = billing_info.approver_contact
+				end_client_name = billing_info.end_client_name
+				billed_client_name = billing_info.billed_client_name
+				yast_id = billing_info.yast_id
+				yast_password = billing_info.yast_password
+				yast_parent_project_id = str(billing_info.yast_parent_project_id)
 			else:
 				approver_name = ''
 				approver_contact = ''
@@ -526,17 +526,17 @@ class BillingProfileSavePage(webapp2.RequestHandler):
 			yast_password = self.request.get('yast_password')
 			yast_parent_project_id = self.request.get('yast_parent_project_id')
 
-			contractor_info = get_contractor_info(contractor_id)
-			if contractor_info == False:
-				contractor_info = ContractorInfo(parent=contractor_info_key(contractor_id))
-			contractor_info.approver_name = approver_name
-			contractor_info.approver_contact = approver_contact
-			contractor_info.end_client_name = end_client_name
-			contractor_info.billed_client_name = billed_client_name
-			contractor_info.yast_id = yast_id
-			contractor_info.yast_password = yast_password
-			contractor_info.yast_parent_project_id = int(yast_parent_project_id)
-			contractor_info.put()
+			billing_info = get_billing_info(contractor_id)
+			if billing_info == False:
+				billing_info = BillingInfo(parent=contractor_info_key(contractor_id))
+			billing_info.approver_name = approver_name
+			billing_info.approver_contact = approver_contact
+			billing_info.end_client_name = end_client_name
+			billing_info.billed_client_name = billed_client_name
+			billing_info.yast_id = yast_id
+			billing_info.yast_password = yast_password
+			billing_info.yast_parent_project_id = int(yast_parent_project_id)
+			billing_info.put()
 			if len(yast_password) > 0:
 				yast_password = 'xxxxxxxxx'
 			else:
@@ -564,8 +564,8 @@ class DetailForm(webapp2.RequestHandler):
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if user_info != False and contractor_info != False:
+			billing_info = get_billing_info(contractor_id)
+			if user_info != False and billing_info != False:
 				template_values = { 
 				 'user_id': user_id,
 				 }
@@ -628,11 +628,11 @@ class HoursReport(webapp2.RequestHandler):
 
 			user_id = self.request.cookies.get('user_id')
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if contractor_info != False:
-				yast_id = contractor_info.yast_id
-				yast_password = contractor_info.yast_password
-				yast_parent_project_id = contractor_info.yast_parent_project_id
+			billing_info = get_billing_info(contractor_id)
+			if billing_info != False:
+				yast_id = billing_info.yast_id
+				yast_password = billing_info.yast_password
+				yast_parent_project_id = billing_info.yast_parent_project_id
 			else:
 				yast_id = ''
 				yast_password = ''
@@ -669,13 +669,13 @@ class TimesheetForm(webapp2.RequestHandler):
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if user_info != False and contractor_info != False:
+			billing_info = get_billing_info(contractor_id)
+			if user_info != False and billing_info != False:
 				user_name = user_info.name
-				approver_name = contractor_info.approver_name
-				approver_contact = contractor_info.approver_contact
-				end_client_name = contractor_info.end_client_name
-				billed_client_name = contractor_info.billed_client_name
+				approver_name = billing_info.approver_name
+				approver_contact = billing_info.approver_contact
+				end_client_name = billing_info.end_client_name
+				billed_client_name = billing_info.billed_client_name
 				template_values = {
 				 'user_id': user_id,
 				 'contractor_id': contractor_id,
@@ -777,11 +777,11 @@ class SummaryForm(webapp2.RequestHandler):
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
 			contractor_id = user_id
-			contractor_info = get_contractor_info(contractor_id)
-			if user_info != False and contractor_info != False:
+			billing_info = get_billing_info(contractor_id)
+			if user_info != False and billing_info != False:
 				user_name = user_info.name
-				end_client_name = contractor_info.end_client_name
-				billed_client_name = contractor_info.billed_client_name
+				end_client_name = billing_info.end_client_name
+				billed_client_name = billing_info.billed_client_name
 				template_values = {
 				 'user_id': user_id,
 				 'contractor_id': contractor_id,
