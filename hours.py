@@ -12,7 +12,7 @@ from google.appengine.ext import ndb
 import webapp2
 
 DEFAULT_USER_ID = 'guest'
-DEFAULT_CONTRACTOR_ID = 'jfitz@computer.org'
+DEFAULT_CONTRACTOR_ID = 'guest'
 
 def enhash(text):
 	# return sha256(text, 'salt', 'key')
@@ -295,8 +295,10 @@ class RegisterPage(webapp2.RequestHandler):
 			message = 'User ID is required'
 				
 		if len(message) == 0:
-			# create user password
-			# create user profile
+			user_password = UserPassword(parent=user_password_key(user_id))
+			password_hash = enhash(password1)
+			user_password.password = password_hash
+			user_password.put()
 			template_values = {
 			 'user_id': user_id
 			 }
