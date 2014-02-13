@@ -33,10 +33,10 @@
 {% endif %}
 <form method="GET" action="register">
 <h1>Register new user</h1>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">User ID:</div><div class="col-xs-2 col-md-1"><input type="text" name="user_id"></div><div class="col-xs-2 col-md-1 fieldmessage" id="new_user_id_message">Required</div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">Password:</div><div class="col-xs-2 col-md-1"><input type="password" name="fala" id="new_user_password" onkeyup="password_onkeyup()" id="new user_password_message" class="fieldmessage"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">Confirm password:</div><div class="col-xs-2 col-md-1"><input type="password" name="bala" id="new_user_confirm_password" onkeyup="confirm_password_onkeyup()"></div><div class="col-xs-2 col-md-1 fieldmessage" id="new_user_confirm_password_message"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-1"><button type="submit" class="submitbutton" value="Register">Register</button></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1" style="text-align: right;">User ID:</div><div class="col-xs-3 col-md-1"><input type="text" name="user_id"></div><div class="col-xs-2 col-md-1 fieldmessage" id="new_user_id_message">Required</div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1" style="text-align: right;">Password:</div><div class="col-xs-3 col-md-1"><input type="password" name="fala" id="new_user_password" onkeyup="password_onkeyup()" id="new user_password_message"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1" style="text-align: right;">Confirm password:</div><div class="col-xs-3 col-md-1"><input type="password" name="bala" id="new_user_confirm_password" onkeyup="confirm_password_onkeyup()"></div><div class="col-xs-2 col-md-1 fieldmessage" id="new_user_confirm_password_message"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-1 col-md-1"><button type="submit" class="submitbutton" value="Register">Register</button></div></div>
 </form>
 {% include "templates/body_gae_logo.html" %}
 {% include "templates/body_bootstrap.html" %}

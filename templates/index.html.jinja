@@ -13,13 +13,13 @@
 <p>{{ message }}</p>
 {% endif %}
 <form method="GET" action="login">
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">User ID:</div><div class="col-xs-2 col-md-1"><input type="text" name="user_id"></div><div class="col-xs-2 col-md-1 fieldmessage">Required</div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">Password:</div><div class="col-xs-2 col-md-1"><input type="password" name="falabala"></div><div class="col-xs-2 col-md-1 fieldmessage">Required</div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><button type="submit" class="submitbutton" value="Login">Login</button></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><a href="reset_password_request" class="linkaslink">Forgot&nbsp;my&nbsp;password</a></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">User ID:</div><div class="col-xs-3 col-md-2"><input type="text" name="user_id"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1">Password:</div><div class="col-xs-3 col-md-2"><input type="password" name="falabala"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-3 col-md-1"><button type="submit" class="submitbutton" value="Login">Login</button></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-3 col-md-2"><a href="reset_password_request" class="linkaslink">Forgot&nbsp;my&nbsp;password</a></div></div>
 </form>
 <div class="row"><div class="col-xs-1">&nbsp;</div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-2 col-md-2"><a href="register-form" class="linkaslink">Register&nbsp;new&nbsp;user</a></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-2 col-md-1"></div><div class="col-xs-3 col-md-2"><a href="register-form" class="linkaslink">Register&nbsp;new&nbsp;user</a></div></div>
 {% include "templates/body_gae_logo.html" %}
 {% include "templates/body_bootstrap.html" %}
 </body>

@@ -342,13 +342,13 @@ class UserPasswordSavePage(webapp2.RequestHandler):
  def get(self):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
-			u_password1 = self.request.get('u_password1')
-			u_password2 = self.request.get('u_password2')
-			if u_password2 == u_password1:
+			password1 = self.request.get('password1')
+			password2 = self.request.get('password2')
+			if password2 == password1:
 				user_password = get_user_password(user_id)
 				if user_password == False:
 					user_password = UserPassword(parent=user_password_key(user_id))
-				password_hash = enhash(u_password1)
+				password_hash = enhash(password1)
 				user_password.password = password_hash
 				user_password.put()
 				template_values = {
