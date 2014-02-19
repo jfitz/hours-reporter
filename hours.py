@@ -209,7 +209,7 @@ def totalize_hours(records):
 	for r in records:
 		total_hours += r['hours']
 	return total_hours
-	
+
 def get_projects_from_yast(yast, start_date, end_date, start_datetime, end_datetime, project_code):
 	projects = yast.getProjects()
 	sorted_records = get_records_from_yast(yast, start_datetime, end_datetime, project_code)
@@ -425,7 +425,8 @@ class UserProfileSavePage(webapp2.RequestHandler):
 			user_info.put()
 			template_values = {
 			 'user_id': user_id,
-			 'user_name': user_name
+			 'user_name': user_name,
+			 'billiing_profile': billing_profile
 			 }
 			template = jinja_environment.get_template('templates/user-profile-display.html.jinja')
 		else:
@@ -602,16 +603,39 @@ class HoursReport(webapp2.RequestHandler):
 	
 	def get(self):
 		user_id = self.request.cookies.get('user_id')
+		
 		if len(user_id) > 0:
-			user_info = get_user_info(user_id)
-			if user_info != False:
-				user_name = user_info.name
-			else:
-				user_name = ''
 			approver_name = self.request.get('approver_name')
 			approver_contact = self.request.get('approver_contact')
 			end_client_name = self.request.get('end_client_name')
 			billed_client_name = self.request.get('billed_client_name')
+			
+			user_info = get_user_info(user_id)
+			if user_info != False:
+				user_name = user_info.name
+				billing_info_id = user_info.billing_profile
+				contractor_name = user_name
+				if billing_info_id == '':
+					billing_info_id = user_id
+				else:
+					contractor_user_info = get_user_info(billing_info_id)
+					if contractor_user_info != False:
+						contractor_id = billing_info_id
+						contractor_name = contractor_user_info.name
+			else:
+				user_name = ''
+				contractor_name = ''
+				billing_info_id = ''
+
+			billing_info = get_billing_info(billing_info_id)
+			if billing_info != False:
+				yast_id = billing_info.yast_id
+				yast_password = billing_info.yast_password
+				yast_parent_project_id = billing_info.yast_parent_project_id
+			else:
+				yast_id = ''
+				yast_password = ''
+				yast_parent_project_id = 0 
 
 			try:
 				start_datetime = datetime.datetime.strptime(self.request.get('start_date'), "%m/%d/%Y")
@@ -625,25 +649,15 @@ class HoursReport(webapp2.RequestHandler):
 					self.response.out.write(self.date_error_template.render(template_values))
 					return
 
+			contractor_id = billing_info_id
 			start_date = datetime.date(start_datetime.year, start_datetime.month, start_datetime.day)
 			end_date = datetime.date(end_datetime.year, end_datetime.month, end_datetime.day)
 
-			user_id = self.request.cookies.get('user_id')
-			contractor_id = user_id
-			billing_info = get_billing_info(contractor_id)
-			if billing_info != False:
-				yast_id = billing_info.yast_id
-				yast_password = billing_info.yast_password
-				yast_parent_project_id = billing_info.yast_parent_project_id
-			else:
-				yast_id = ''
-				yast_password = ''
-				yast_parent_project_id = 0 
-
 			user_dict = {
 			 'user_id': user_id,
-			 'contractor_id': contractor_id,
 			 'user_name': user_name,
+			 'contractor_id': contractor_id,
+			 'contractor_name': contractor_name,
 			 'approver_name': approver_name,
 			 'approver_contact': approver_contact,
 			 'end_client_name': end_client_name,
@@ -670,27 +684,36 @@ class TimesheetForm(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
-			contractor_id = user_id
-			billing_info = get_billing_info(contractor_id)
-			if user_info != False and billing_info != False:
+			if user_info != False:
 				user_name = user_info.name
-				approver_name = billing_info.approver_name
-				approver_contact = billing_info.approver_contact
-				end_client_name = billing_info.end_client_name
-				billed_client_name = billing_info.billed_client_name
-				template_values = {
-				 'user_id': user_id,
-				 'contractor_id': contractor_id,
-				 'user_name': user_name,
-				 'approver_name': approver_name,
-				 'approver_contact': approver_contact,
-				 'end_client_name': end_client_name,
-				 'billed_client_name': billed_client_name
-				 }
-				template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
+				billing_profile_id = user_info.billing_profile
+				if billing_profile_id == '':
+					billing_profile_id = user_id
+				billing_info = get_billing_info(billing_profile_id)
+				if billing_info != False:
+					contractor_id = billing_profile_id
+					approver_name = billing_info.approver_name
+					approver_contact = billing_info.approver_contact
+					end_client_name = billing_info.end_client_name
+					billed_client_name = billing_info.billed_client_name
+					template_values = {
+					 'user_id': user_id,
+					 'contractor_id': contractor_id,
+					 'user_name': user_name,
+					 'approver_name': approver_name,
+					 'approver_contact': approver_contact,
+					 'end_client_name': end_client_name,
+					 'billed_client_name': billed_client_name
+					 }
+					template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
+				else:
+					template_values = { 
+					 'message': 'No billing information found for ' + billing_profile_id
+					 }
+					template = jinja_environment.get_template('templates/select.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or billing information found'
+				 'message': 'No user information found for ' + user_id
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
