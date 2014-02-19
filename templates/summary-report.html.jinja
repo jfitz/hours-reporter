@@ -10,8 +10,16 @@
 <body>
 <h1>Monthly summary</h1>
 <table>
-<tr><td width="20">&nbsp;</td><td>Client: {{ end_client_name }}</td><td>&nbsp;</td><td>Billed client: {{ billed_client_name }}</td></tr>
-<tr><td width="20">&nbsp;</td><td>Start date: {{ start }}</td><td>&nbsp;</td><td>End date: {{ end }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Client:</td><td>{{ end_client_name }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Billed client:</td><td>{{ billed_client_name }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Start date:</td><td>{{ start }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>End date:</td><td>{{ end }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Contractor:</td><td>{{ contractor_id }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Name:</td><td>{{ contractor_name }}</td></tr>
+{% if user_id != contractor_id %}
+<tr><td width="20">&nbsp;</td><td>User:</td><td>{{ user_id }}</td></tr>
+<tr><td width="20">&nbsp;</td><td>Name:</td><td>{{ user_name }}</td></tr>
+{% endif %}
 </table>
 <p></p>
 {% if status == 0 %}

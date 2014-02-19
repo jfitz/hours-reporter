@@ -566,16 +566,25 @@ class DetailForm(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
-			contractor_id = user_id
-			billing_info = get_billing_info(contractor_id)
-			if user_info != False and billing_info != False:
-				template_values = { 
-				 'user_id': user_id,
-				 }
-				template = jinja_environment.get_template('templates/detail-form.html.jinja')
+			if user_info != False:
+				user_name = user_info.name
+				billing_profile_id = user_info.billing_profile
+				if billing_profile_id == '':
+					billing_profile_id = user_id
+				billing_info = get_billing_info(billing_profile_id)
+				if billing_info != False:
+					template_values = { 
+					 'user_id': user_id,
+					 }
+					template = jinja_environment.get_template('templates/detail-form.html.jinja')
+				else:
+					template_values = { 
+					 'message': 'No billing information found for ' + billing_profile_id
+					 }
+					template = jinja_environment.get_template('templates/select.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or billing information found'
+				 'message': 'No user information found for ' + user_id
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:
@@ -801,23 +810,32 @@ class SummaryForm(webapp2.RequestHandler):
 		user_id = self.request.cookies.get('user_id')
 		if len(user_id) > 0:
 			user_info = get_user_info(user_id)
-			contractor_id = user_id
-			billing_info = get_billing_info(contractor_id)
-			if user_info != False and billing_info != False:
+			if user_info != False:
 				user_name = user_info.name
-				end_client_name = billing_info.end_client_name
-				billed_client_name = billing_info.billed_client_name
-				template_values = {
-				 'user_id': user_id,
-				 'contractor_id': contractor_id,
-				 'user_name': user_name,
-				 'end_client_name': end_client_name,
-				 'billed_client_name': billed_client_name
-				 }
-				template = jinja_environment.get_template('templates/summary-form.html.jinja')
+				billing_profile_id = user_info.billing_profile
+				if billing_profile_id == '':
+					billing_profile_id = user_id
+				billing_info = get_billing_info(billing_profile_id)
+				if billing_info != False:
+					contractor_id = billing_profile_id
+					end_client_name = billing_info.end_client_name
+					billed_client_name = billing_info.billed_client_name
+					template_values = {
+					 'user_id': user_id,
+					 'contractor_id': contractor_id,
+					 'user_name': user_name,
+					 'end_client_name': end_client_name,
+					 'billed_client_name': billed_client_name
+					 }
+					template = jinja_environment.get_template('templates/summary-form.html.jinja')
+				else:
+					template_values = { 
+					 'message': 'No billing information found for ' + billing_profile_id
+					 }
+					template = jinja_environment.get_template('templates/select.html.jinja')
 			else:
 				template_values = { 
-				 'message': 'No user information or billing information found'
+				 'message': 'No user information found for ' + user_id
 				 }
 				template = jinja_environment.get_template('templates/select.html.jinja')
 		else:

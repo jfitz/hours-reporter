@@ -64,13 +64,9 @@
 }
 .linkaslink {
   -webkit-appearance: none;
-  margin: 5px;
-  padding: 10px;
-  border: none;
   background: white;
   color: #bbaa77;
   font: -webkit-small-control;
-  text-decoration: underline;
 }
 .pagemenulink1 {
   display: block;
