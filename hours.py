@@ -3,6 +3,8 @@ import datetime
 import re
 import jinja2
 import os
+from base64 import b64encode
+import hashlib
 import json
 from parse_datetime import *
 import calendar
@@ -14,8 +16,8 @@ import webapp2
 DEFAULT_USER_ID = 'guest'
 DEFAULT_CONTRACTOR_ID = 'guest'
 
-def enhash(text):
-	# return sha256(text, 'salt', 'key')
+def enhash(text, salt, hash_func):
+	password_hash = hashlib.sha256(salt + text).hexdigest()
 	return text
 
 def user_password_key(user_id=DEFAULT_USER_ID):
@@ -23,12 +25,14 @@ def user_password_key(user_id=DEFAULT_USER_ID):
 
 class UserPassword(ndb.Model):
 	password = ndb.StringProperty(indexed=False)
+	salt = ndb.StringProperty(indexed=False)
+	hash_func = ndb.StringProperty(indexed=False)
 	
-def get_user_password(user_id):
+def get_user_password_info(user_id):
 	user_password_query = UserPassword.query(ancestor=user_password_key(user_id))
-	user_passwords = user_password_query.fetch(1)
-	if len(user_passwords) > 0:
-		return user_passwords[0]
+	user_password_infos = user_password_query.fetch(1)
+	if len(user_password_infos) > 0:
+		return user_password_infos[0]
 	else:
 		return False
 
@@ -47,11 +51,14 @@ def exists_user(user_id):
 		exists = True
 	return exists
 	
-def verify_user(user_id, password_hash):
+def verify_user(user_id, password):
 	verify = False
-	user_password = get_user_password(user_id)
-	if user_password != False:
-		stored_password_hash = user_password.password
+	user_password_info = get_user_password_info(user_id)
+	if user_password_info != False:
+		stored_password_hash = user_password_info.password
+		salt = user_password_info.salt
+		hash_func = user_password_info.hash_func
+		password_hash = enhash(password, salt, hash_func)
 		if password_hash == stored_password_hash:
 			verify = True
 	return verify
@@ -254,8 +261,7 @@ class LoginPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
 		password = self.request.get('falabala')
-		password_hash = enhash(password)
-		if verify_user(user_id, password_hash):
+		if verify_user(user_id, password):
 			template_values = {
 			 'user_id': user_id
 			 }
@@ -295,10 +301,15 @@ class RegisterPage(webapp2.RequestHandler):
 			message = 'User ID is required'
 				
 		if len(message) == 0:
-			user_password = UserPassword(parent=user_password_key(user_id))
-			password_hash = enhash(password1)
-			user_password.password = password_hash
-			user_password.put()
+			user_password_info = UserPassword(parent=user_password_key(user_id))
+			salt = os.urandom(16)
+			salt_token = b64encode(salt).decode('utf-8')
+			hash_func = 'sha256'
+			password_hash = enhash(password1, salt_token, hash_func)
+			user_password_info.password = password_hash
+			user_password_info.salt = salt_token
+			user_password_info.hash_func = hash_func
+			user_password_info.put()
 			template_values = {
 			 'user_id': user_id
 			 }
@@ -345,12 +356,17 @@ class UserPasswordSavePage(webapp2.RequestHandler):
 			password1 = self.request.get('password1')
 			password2 = self.request.get('password2')
 			if password2 == password1:
-				user_password = get_user_password(user_id)
-				if user_password == False:
-					user_password = UserPassword(parent=user_password_key(user_id))
-				password_hash = enhash(password1)
-				user_password.password = password_hash
-				user_password.put()
+				user_password_info = get_user_password_info(user_id)
+				if user_password_info == False:
+					user_password_info = UserPassword(parent=user_password_key(user_id))
+				salt = os.urandom(16)
+				salt_token = b64encode(salt).decode('utf-8')
+				hash_func = 'sha256'
+				password_hash = enhash(password1, salt_token, hash_func)
+				user_password_info.password = password_hash
+				user_password_info.salt = salt_token
+				user_password_info.hash_func = hash_func
+				user_password_info.put()
 				template_values = {
 				 'user_id': user_id,
 				 'message': 'Password changed'
@@ -788,20 +804,20 @@ class DisplayResetPasswordForm(webapp2.RequestHandler):
 class ConfirmResetPasswordPage(webapp2.RequestHandler):
 	def get(self):
 		user_id = self.request.get('user_id')
-		user_password = get_user_password(user_id)
-		if user_password != False:
-			user_password.password = enhash('abc123')
-			user_password.put()
-			template_values = {
-			 'message': 'Password has been reset. Check your e-mail for new password.'
-			 }
-		else:
-			user_password = UserPassword(parent=user_password_key(user_id))
-			user_password.password = enhash('abc123')
-			user_password.put()
-			template_values = {
-			 'message': 'Password has been reset. Check your e-mail for new password.'
-			 }
+		user_password_info = get_user_password_info(user_id)
+		new_password = 'abc123'
+		salt = os.urandom(16)
+		salt_token = b64encode(salt).decode('utf-8')
+		hash_func = 'sha256'
+		if user_password_info == False:
+			user_password_info = UserPassword(parent=user_password_key(user_id))
+		user_password_info.password = enhash(new_password, salt_token, hash_func)
+		user_password_info.salt = salt_token
+		user_password_info.hash_func = hash_func
+		user_password_info.put()
+		template_values = {
+		 'message': 'Password has been reset. Check your e-mail for new password.'
+		 }
 		template = jinja_environment.get_template('templates/index.html.jinja')
 		self.response.out.write(template.render(template_values))
 
