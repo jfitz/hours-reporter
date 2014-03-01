@@ -18,7 +18,7 @@ DEFAULT_CONTRACTOR_ID = 'guest'
 
 def enhash(text, salt, hash_func):
 	password_hash = hashlib.sha256(salt + text).hexdigest()
-	return text
+	return password_hash
 
 def user_password_key(user_id=DEFAULT_USER_ID):
 	return ndb.Key('UserPassword', user_id)
