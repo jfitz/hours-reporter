@@ -7,3 +7,7 @@
 # ignore package sources
 external packages/
 
+odd data
+images/link_to_logo.html
+datastore/
+
