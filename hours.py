@@ -1,3 +1,4 @@
+import string
 import time
 import datetime
 import re
@@ -6,15 +7,22 @@ import os
 from base64 import b64encode
 import hashlib
 import json
+from random import sample, choice
 from parse_datetime import *
 import calendar
 from yastlib import *
 from google.appengine.api import users
+from google.appengine.api import mail
 from google.appengine.ext import ndb
 import webapp2
 
 DEFAULT_USER_ID = 'guest'
 DEFAULT_CONTRACTOR_ID = 'guest'
+
+def create_password():
+	chars = string.letters + string.digits
+	length = 8
+	return ''.join(choice(chars) for _ in range(length))
 
 def enhash(text, salt, hash_func):
 	password_hash = hashlib.sha256(salt + text).hexdigest()
@@ -802,19 +810,36 @@ class DisplayResetPasswordForm(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 
 class ConfirmResetPasswordPage(webapp2.RequestHandler):
+	def build_message(self, user_name, new_password):
+		template_values = {
+		 'user_name': user_name,
+		 'new_password': new_password
+		}
+		template = jinja_environment.get_template('templates/password-reset.email.jinja')
+		return template.render(template_values)
+		
 	def get(self):
 		user_id = self.request.get('user_id')
-		user_password_info = get_user_password_info(user_id)
-		new_password = 'abc123'
-		salt = os.urandom(16)
-		salt_token = b64encode(salt).decode('utf-8')
-		hash_func = 'sha256'
-		if user_password_info == False:
-			user_password_info = UserPassword(parent=user_password_key(user_id))
-		user_password_info.password = enhash(new_password, salt_token, hash_func)
-		user_password_info.salt = salt_token
-		user_password_info.hash_func = hash_func
-		user_password_info.put()
+		user_info = get_user_info(user_id)
+		if user_info != False:
+			user_name = user_info.name
+			user_password_info = get_user_password_info(user_id)
+			if user_password_info != False:
+				new_password = create_password()
+				salt = os.urandom(16)
+				salt_token = b64encode(salt).decode('utf-8')
+				hash_func = 'sha256'
+				if user_password_info == False:
+					user_password_info = UserPassword(parent=user_password_key(user_id))
+				user_password_info.password = enhash(new_password, salt_token, hash_func)
+				user_password_info.salt = salt_token
+				user_password_info.hash_func = hash_func
+				user_password_info.put()
+				message_body = self.build_message(user_name, new_password)
+				mail.send_mail(sender="Hours Reporter Support <jfitzpatrick.h89@gmail.com>",
+					to="<" + user_id + ">",
+					subject="Hours Reporter password reset",
+					body=message_body)
 		template_values = {
 		 'message': 'Password has been reset. Check your e-mail for new password.'
 		 }
