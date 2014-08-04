@@ -6,13 +6,6 @@
 {% include "templates/head_bootstrap.html" %}
 {% include "templates/css.html" %}
 {% include "templates/head_gae_js.html" %}
-  <script type="text/javascript" src="js/jquery.datepick.js"></script>
-  <script type="text/javascript">
-$(function() {
-	$('#popupDatepicker1').datepick();
-	$('#popupDatepicker2').datepick();
-});
-  </script>
 </head>
 <body>
 {% include "templates/logged_in_header.html" %}
@@ -21,8 +14,8 @@ $(function() {
 <form method="GET" action="summary-report" target="_blank">
 <div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">End client:</div><div class="col-xs-4 col-md-2"><input type="text" name="end_client_name" value="{{ end_client_name }}"></div></div>
 <div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Billed client:</div><div class="col-xs-4 col-md-2"><input type="text" name="billed_client_name" value="{{ billed_client_name }}"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Starting date:</div><div class="col-xs-4 col-md-2"><input type="text" id="popupDatepicker1" name="start_date"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Ending date:</div><div class="col-xs-4 col-md-2"><input type="text" id="popupDatepicker2" name="end_date"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Starting date:</div><div class="col-xs-4 col-md-2"><input type="text" name="start_date"></div></div>
+<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Ending date:</div><div class="col-xs-4 col-md-2"><input type="text" name="end_date"></div></div>
 <div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2"></div><div class="col-xs-4 col-md-2"><button type="submit" class="submitbutton" value="Summary">Create summary</button></div></div>
 </form>
 {% include "templates/body_gae_logo.html" %}
