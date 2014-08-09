@@ -12,9 +12,23 @@
 {% include "templates/menu.html" %}
 <h1>Task detail report</h1>
 <form method="GET" action="details-report" target="_blank">
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Starting date:</div><div class="col-xs-4 col-md-2"><input type="text" name="start_date"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2">Ending date:</div><div class="col-xs-4 col-md-2"><input type="text" name="end_date"></div></div>
-<div class="row"><div class="col-xs-1"></div><div class="col-xs-3 col-md-2"></div><div class="col-xs-4 col-md-2"><button type="submit" class="submitbutton" value="Details">Create report</button></div></div>
+<div class="container">
+<div class="row">
+  <div class="col-xs-1"></div>
+  <div class="col-xs-3 col-md-2">Starting date:</div>
+  <div class="col-xs-4 col-md-2"><input type="text" name="start_date" id="dp1" data-date-format="yyyy-mm-dd" data-date="{{ start_date }}" value="{{ start_date }}"></div>
+</div>
+<div class="row">
+  <div class="col-xs-1"></div>
+  <div class="col-xs-3 col-md-2">Ending date:</div>
+  <div class="col-xs-4 col-md-2"><input type="text" name="end_date" id="dp2" data-date-format="yyyy-mm-dd" data-date="{{ end_date }}" value="{{ end_date }}"></div>
+</div>
+<div class="row">
+  <div class="col-xs-1"></div>
+  <div class="col-xs-3 col-md-2"></div>
+  <div class="col-xs-4 col-md-2"><button type="submit" class="submitbutton" value="Details">Create report</button></div>
+</div>
+</div>
 </form>
 {% include "templates/body_gae_logo.html" %}
 {% include "templates/body_bootstrap.html" %}

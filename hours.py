@@ -736,7 +736,9 @@ class TimesheetForm(webapp2.RequestHandler):
 					 'approver_name': approver_name,
 					 'approver_contact': approver_contact,
 					 'end_client_name': end_client_name,
-					 'billed_client_name': billed_client_name
+					 'billed_client_name': billed_client_name,
+					 'start_date': datetime.date.today().isoformat(),
+					 'end_date': datetime.date.today().isoformat()
 					 }
 					template = jinja_environment.get_template('templates/timesheet-form.html.jinja')
 				else:
