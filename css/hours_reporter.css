@@ -6,6 +6,9 @@
   font-weight: bold;
   text-decoration: none;
 }
+.mynavbartext {
+  color: #aa1f22;
+}
 .header {
   -webkit-appearance: none;
   border: 5px;
@@ -74,26 +77,4 @@
   background: white;
   color: #aa1f22;
   font: -webkit-small-control;
-}
-.pagemenulink1 {
-  display: block;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  text-align: center;
-  background: #aa1f22;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-}
-.pagemenulink2 {
-  display: block;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  text-align: center;
-  background: #aa1f22;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
 }
