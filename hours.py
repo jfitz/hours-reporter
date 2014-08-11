@@ -599,6 +599,8 @@ class DetailForm(webapp2.RequestHandler):
 				if billing_info != False:
 					template_values = { 
 					 'user_id': user_id,
+					 'start_date': datetime.date.today().isoformat(),
+					 'end_date': datetime.date.today().isoformat()
 					 }
 					template = jinja_environment.get_template('templates/detail-form.html.jinja')
 				else:
@@ -868,7 +870,9 @@ class SummaryForm(webapp2.RequestHandler):
 					 'contractor_id': contractor_id,
 					 'user_name': user_name,
 					 'end_client_name': end_client_name,
-					 'billed_client_name': billed_client_name
+					 'billed_client_name': billed_client_name,
+					 'start_date': datetime.date.today().isoformat(),
+					 'end_date': datetime.date.today().isoformat()
 					 }
 					template = jinja_environment.get_template('templates/summary-form.html.jinja')
 				else:
