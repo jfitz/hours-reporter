@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+ width="1000.000000pt" height="1000.000000pt" viewBox="0 0 1000.000000 1000.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by John Fitzpatrick Copyright 2014
+</metadata>
+<desc>Sun-and-spaceship logo</desc>
+<rect x="10" y="10" width="980" height="980" style="fill: none; stroke: #aa1f22; stroke-width: 15;"/>
+<circle cx="300" cy="300" r="100" fill="#aa1f22"/>
+<path d="M300,300 
+	     m0,-105 h20 l-20,-40 l-20,40 z 
+	     M300,300 
+         m0,105 h-20 l20,40 l20,-40 z 
+         M300,300 
+         m-105,0 v-20 l-40,20 l40,20 z 
+         M300,300 
+         m105,0 v20 l40,-20 l-40,-20 z" fill="#aa1f22" />
+<path d="M600,100 
+	     a150,800 0 0,0 -100,650 
+	     a200,200 0 0,1 200,0 
+	     a150,800 0 0,0 -100,-650 z
+	     m-100,550 
+	     a150,300 0 0,0 -70,250
+	     l20,0 
+	     a150,400 0 0,1 45,-150
+	     a150,800 0 0,0 5,-100 z
+	     m200,0
+	     a150,300 0 0,1 70,250 
+	     l-20,0
+	     a150,400 0 0,0 -45,-150
+	     a150,800 0 0,1 -5,-100 z"
+        fill="#aa1f22" />
+</svg>

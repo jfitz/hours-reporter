@@ -6,6 +6,9 @@
   font-weight: bold;
   text-decoration: none;
 }
+.mynavbar-brand {
+  padding: 0;
+}
 .mynavbartext {
   color: #aa1f22;
 }
