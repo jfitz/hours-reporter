@@ -16,6 +16,53 @@ from google.appengine.api import mail
 from google.appengine.ext import ndb
 import webapp2
 
+# contract information
+#  description
+#  identification number
+#  start date
+#  end date
+#  allocated hours
+#  billed client name
+#  end client name
+#  pay rates
+#  pay rate schedule [flat, 8/day, 40/week, holiday-extra]
+
+# password info
+#  password
+#  salt
+#  hash function
+
+# contractor information
+#  name
+#  contact info
+
+# user information
+#  name
+#  contact info
+#  billing id (points to contractor info for another user)
+
+# yast information
+#  user id
+#  user password
+#  parent project yast id
+
+# approver information
+#  name
+#  contact info
+
+# period info
+#  start of period info
+#   hours already billed (derived from yast)
+#  hours billed
+#   estimate total hours (specified prior to period)
+#   detail (hours by day) (derived from yast)
+#   actual total hours (derived from detail)
+#   variance from estimate, hours
+#   variance from estimate, percentage
+#  end of period info
+#   hours billed at end of period (derived)
+# 
+
 DEFAULT_USER_ID = 'guest'
 DEFAULT_CONTRACTOR_ID = 'guest'
 
@@ -644,6 +691,7 @@ class HoursReport(webapp2.RequestHandler):
 			approver_contact = self.request.get('approver_contact')
 			end_client_name = self.request.get('end_client_name')
 			billed_client_name = self.request.get('billed_client_name')
+			format = self.request.get('format')
 			
 			user_info = get_user_info(user_id)
 			if user_info != False:
@@ -698,7 +746,8 @@ class HoursReport(webapp2.RequestHandler):
 			 'end_client_name': end_client_name,
 			 'billed_client_name': billed_client_name,
 			 'start': start_date,
-			 'end': end_date
+			 'end': end_date,
+			 'format': format
 			 }
 
 			yast = Yast()
@@ -767,8 +816,9 @@ class TimesheetReport(HoursReport):
 	def write_response(self, values):
 		start_date = values['start']
 		end_date = values['end']
+		format = values['format']
 		threshold = datetime.timedelta(15)
-		if end_date - start_date < threshold:
+		if format == 'vertical' or (format == 'auto' and end_date - start_date < threshold):
 			template = jinja_environment.get_template('templates/timesheet.html.jinja')
 		else:
 			template = jinja_environment.get_template('templates/timesheet-month.html.jinja')
